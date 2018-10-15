@@ -1,85 +1,81 @@
 <template>
-    <v-app id="login">
-        <v-content>
-            <v-container fluid fill-height>
-                <v-layout align-center justify-center>
-                    <v-flex xs12 sm8 md4>
-                        <v-card class="v-layout-item v-size-50 v-small-size-100">
+    <v-layout align-center justify-center>
+        <v-flex xs12 sm8 md4>
+            <v-card class="v-layout-item v-size-50 v-small-size-100">
 
-                            <v-card-title primary-title>
-                                <div class="headline">Login</div>
-                            </v-card-title>
+                <v-card-title primary-title>
+                    <div class="headline">Login</div>
+                </v-card-title>
 
-                            <v-card-text>
+                <v-card-text>
 
-                                <v-form ref="form" v-model="valid" lazy-validation>
-                                    <v-text-field
-                                        v-model.trim="form.email"
-                                        :error-messages="emailErrors"
-                                        label="E-mail"
-                                        required
-                                        prepend-icon="mail"
-                                        type="email"
-                                        name="email"
-                                        autocomplete="email"
-                                        @input="$v.form.email.$touch()"
-                                        @blur="$v.form.email.$touch()"
-                                    />
-                                    <v-text-field
-                                        v-model.trim="$v.form.senha.$model"
-                                        :error-messages="senhaErrors"
-                                        label="Senha"
-                                        required
-                                        prepend-icon="lock"
-                                        :type="showPassword ? 'text' : 'password'"
-                                        :append-icon="showPassword ? 'visibility_off' : 'visibility'"
-                                        name="senha"
-                                        hint="Senha tem 8-20 caracteres"
-                                        @input="$v.form.senha.$touch()"
-                                        @blur="$v.form.senha.$touch()"
-                                        @click:append="showPassword = !showPassword"
-                                    />
-                                </v-form>
+                    <v-form ref="form" v-model="valid" lazy-validation @keyup.native.enter="submit">
+                        <v-text-field
+                            v-model.trim="form.email"
+                            :error-messages="emailErrors"
+                            label="E-mail"
+                            required
+                            prepend-icon="mail"
+                            type="email"
+                            name="email"
+                            autocomplete="email"
+                            @input="$v.form.email.$touch()"
+                            @blur="$v.form.email.$touch()"
+                        />
+                        <v-text-field
+                            v-model.trim="$v.form.senha.$model"
+                            :error-messages="senhaErrors"
+                            label="Senha"
+                            required
+                            prepend-icon="lock"
+                            :type="showPassword ? 'text' : 'password'"
+                            :append-icon="showPassword ? 'visibility_off' : 'visibility'"
+                            name="senha"
+                            hint="Senha tem 8-20 caracteres"
+                            @input="$v.form.senha.$touch()"
+                            @blur="$v.form.senha.$touch()"
+                            @click:append="showPassword = !showPassword"
+                        />
+                    </v-form>
 
-                                <v-progress-linear
-                                    :indeterminate="true"
-                                    v-if="sending"
-                                    class="d-block"
-                                />
+                    <v-progress-linear
+                        :indeterminate="true"
+                        v-if="sending"
+                        class="d-block"
+                    />
 
-                            </v-card-text>
+                </v-card-text>
 
-                            <v-card-actions>
-                                <v-btn @click="submit" flat color="primary" :disabled="sending && !valid">Login</v-btn>
-                                <v-btn @click="reset" flat color="secondary" :disabled="sending">Resetar</v-btn>
-                            </v-card-actions>
+                <v-card-actions>
+                    <v-btn @click="submit" flat color="primary" :disabled="!valid">Login</v-btn>
+                    <v-spacer/>
+                    <v-btn @click="reset" flat color="secondary" :disabled="sending">Resetar</v-btn>
+                </v-card-actions>
 
-                        </v-card>
+            </v-card>
 
-                        <v-snackbar
-                            :value="logged"
-                            :bottom="true"
-                            color="success"
-                        >
-                            <v-icon color="white">check</v-icon>
-                            {{ lastUser }} logado com sucesso! <br/> Redirecionando...
-                        </v-snackbar>
+            <p> e-mail: teste@teste.com, senha: testeteste </p>
 
-                        <v-snackbar
-                            :value="cantLogin"
-                            :bottom="true"
-                            color="error"
-                            @click="cantLogin = !cantLogin"
-                        >
-                            <v-icon color="white">error</v-icon>
-                            E-mail ou senha inválidos
-                        </v-snackbar>
+            <v-snackbar
+                :value="logged"
+                :bottom="true"
+                color="success"
+            >
+                <v-icon left color="white">check</v-icon>
+                {{ lastUser }} logado com sucesso! <br/> Redirecionando...
+            </v-snackbar>
 
-                    </v-flex>
-                </v-layout>
-            </v-container>
-        </v-content>
-    </v-app>
+            <v-snackbar
+                :value="cantLogin"
+                :bottom="true"
+                color="error"
+                @click="cantLogin = !cantLogin"
+            >
+                <v-icon left color="white">error</v-icon>
+                E-mail ou senha inválidos
+            </v-snackbar>
+        </v-flex>
+    </v-layout>
 </template>
 
 <script>
@@ -130,6 +126,9 @@
                 if (!this.$v.form.senha.$dirty) return errors;
                 !this.$v.form.senha.required && errors.push('Senha obrigatória');
                 return errors;
+            },
+            logar() {
+                console.log("teste");
             }
         },
 
@@ -142,7 +141,7 @@
                             this.logged = true;
                             this.sending = false;
                             this.lastUser = response.user.email;
-                            setTimeout(() => location.assign("/"), 3000);
+                            setTimeout(() => this.$router.push("/"), 3000);
                         })
                         .catch(() => {
                             this.cantLogin = true;

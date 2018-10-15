@@ -21,7 +21,7 @@ module.exports = {
     /*
     ** Customize the progress-bar color
     */
-    loading: {color: '#fff'},
+    loading: {color: '#5d5dff'},
 
     /*
     ** Global CSS
@@ -54,7 +54,6 @@ module.exports = {
     ** Build configuration
     */
     build: {
-        vendor: ["axios", "vuetify"],
         /*
         ** You can extend webpack config here
         */
