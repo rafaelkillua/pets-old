@@ -1,7 +1,7 @@
 const pkg = require('./package')
 
 module.exports = {
-    mode: 'universal',
+    mode: 'spa',
 
     /*
     ** Headers of the page
@@ -26,19 +26,20 @@ module.exports = {
     /*
     ** Global CSS
     */
-    css: [],
+    css: ["~assets/app.styl"],
 
     /*
     ** Plugins to load before mounting the App
     */
-    plugins: [],
+    plugins: ["~plugins/vuetify.js"],
 
     /*
     ** Nuxt.js modules
     */
     modules: [
         // Doc: https://github.com/nuxt-community/axios-module#usage
-        '@nuxtjs/axios'
+        '@nuxtjs/axios',
+        '@nuxtjs/vuetify'
     ],
     /*
     ** Axios module configuration
@@ -47,10 +48,13 @@ module.exports = {
         // See https://github.com/nuxt-community/axios-module#options
     },
 
+    vuetify: {},
+
     /*
     ** Build configuration
     */
     build: {
+        vendor: ["axios", "vuetify"],
         /*
         ** You can extend webpack config here
         */
@@ -58,4 +62,4 @@ module.exports = {
 
         }
     }
-}
+};
