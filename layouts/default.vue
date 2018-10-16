@@ -64,9 +64,14 @@
                 <v-btn flat
                        v-for="rota in rotas"
                        :to="rota.caminho"
-                       :disabled="rota.auth"
+                       :disabled="false"
                        :key="rota.nome"
-                > {{rota.nome}}
+                >
+                    <v-icon left>{{rota.icone}}</v-icon>
+                    {{rota.nome}}
+                </v-btn>
+                <v-btn flat @click="deslogar">
+                    TESTE LOGOUT
                 </v-btn>
             </v-toolbar-items>
 
@@ -82,7 +87,7 @@
             <v-container fill-height>
                 <v-layout align-center justify-end>
                     <p class="white--text"> &copy;2018 -
-                        <a href="https://rafaelst.com.br" target="_blank">
+                        <a href="https://rafaelst.com.br" target="_blank" class="white--text">
                             <strong>Rafael Sampaio Tavares</strong>
                         </a>
                     </p>
@@ -94,17 +99,24 @@
 </template>
 
 <script>
+    import {auth} from "~/services/fireinit";
+
     export default {
         data: () => ({
-            auth: true,
+            auth: auth.currentUser != null,
             drawer: false,
             rotas: [
-                {nome: "Cadastrar-se", icone: "person_add", caminho: "/cadastrar", auth: false},
+                {nome: "Cadastrar-se", icone: "person_add", caminho: "/cadastro", auth: false},
                 {nome: "Login", icone: "person", caminho: "/login", auth: false},
                 {nome: "Cadastrar Pet", icone: "pets", caminho: "/cadastrarPet", auth: true},
                 {nome: "Logout", icone: "exit_to_app", caminho: "/logout", auth: true}
             ]
-        })
+        }),
+        methods: {
+            deslogar() {
+                auth.signOut();
+            }
+        }
     }
 </script>
 

@@ -8,7 +8,7 @@ export default context => {
         auth.useDeviceLanguage();
         auth.onAuthStateChanged(user => {
             if (user) {
-                console.log(user);
+                console.log("PLUGIN");
                 return resolve(store.commit('setUser', user));
             }
             return resolve();

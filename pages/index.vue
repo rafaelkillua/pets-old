@@ -8,6 +8,7 @@
                 <ul>
                     <p> [ ] Cadastro </p>
                     <p> [X] Login </p>
+                    <p> [ ] Auth: {{usuarioLogado}}</p>
                     <p> [ ] Logout </p>
                     <p> [ ] Cadastrar Pet </p>
                     <p> [ ] Listar Pets </p>
@@ -16,3 +17,15 @@
         </v-layout>
     </v-container>
 </template>
+
+<script>
+    import {auth} from "../services/fireinit";
+
+    console.log("auth", auth.currentUser);
+
+    export default {
+        data: () => ({
+            usuarioLogado: auth.currentUser !== null ? auth.currentUser.email : "Sem usuário logado"
+        })
+    }
+</script>

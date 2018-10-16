@@ -54,8 +54,6 @@
 
             </v-card>
 
-            <p> e-mail: teste@teste.com, senha: testeteste </p>
-
             <v-snackbar
                 :value="logged"
                 :bottom="true"

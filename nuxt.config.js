@@ -31,7 +31,7 @@ module.exports = {
     /*
     ** Plugins to load before mounting the App
     */
-    plugins: ["~plugins/vuetify.js"],
+    plugins: ["~plugins/vuetify.js", "~plugins/fireauth.js"],
 
     /*
     ** Nuxt.js modules
