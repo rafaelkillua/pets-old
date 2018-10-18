@@ -6,26 +6,15 @@
             </v-flex>
             <v-flex xs12>
                 <ul>
-                    <p> [ ] Cadastro </p>
+                    <p> [X] Cadastro </p>
                     <p> [X] Login </p>
-                    <p> [ ] Auth: {{usuarioLogado}}</p>
-                    <p> [ ] Logout </p>
+                    <p> [X] Autenticação</p>
+                    <p> [X] Logout </p>
                     <p> [ ] Cadastrar Pet </p>
                     <p> [ ] Listar Pets </p>
+                    <p> [ ] Editar Perfil </p>
                 </ul>
             </v-flex>
         </v-layout>
     </v-container>
 </template>
-
-<script>
-    import {auth} from "../services/fireinit";
-
-    console.log("auth", auth.currentUser);
-
-    export default {
-        data: () => ({
-            usuarioLogado: auth.currentUser !== null ? auth.currentUser.email : "Sem usuário logado"
-        })
-    }
-</script>

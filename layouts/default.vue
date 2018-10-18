@@ -8,16 +8,17 @@
             temporary
         >
             <v-list class="pa-1">
-                <v-list-tile avatar>
+                <v-list-tile avatar v-if="isAuthenticated">
                     <v-list-tile-avatar>
                         <img src="../assets/placeholder_auth.jpg">
                     </v-list-tile-avatar>
 
                     <v-list-tile-content>
-                        <v-list-tile-title>Rafael Sampaio Tavares</v-list-tile-title>
+                        <v-list-tile-title>{{getLoggedUser.email}}</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile avatar>
+
+                <v-list-tile avatar v-else-if="!isAuthenticated">
                     <v-list-tile-avatar>
                         <img src="../assets/placeholder.png">
                     </v-list-tile-avatar>
@@ -34,6 +35,7 @@
 
                 <v-list-tile
                     v-for="rota in rotas"
+                    v-if="rota.needAuth === isAuthenticated"
                     :key="rota.nome"
                     @click="$router.push(rota.caminho)"
                 >
@@ -43,6 +45,19 @@
 
                     <v-list-tile-content>
                         <v-list-tile-title>{{ rota.nome }}</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+
+                <v-list-tile
+                    v-if="isAuthenticated"
+                    @click="logout"
+                >
+                    <v-list-tile-action>
+                        <v-icon>exit_to_app</v-icon>
+                    </v-list-tile-action>
+
+                    <v-list-tile-content>
+                        <v-list-tile-title>Logout</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
             </v-list>
@@ -64,14 +79,18 @@
                 <v-btn flat
                        v-for="rota in rotas"
                        :to="rota.caminho"
-                       :disabled="false"
+                       v-if="rota.needAuth === isAuthenticated"
                        :key="rota.nome"
                 >
                     <v-icon left>{{rota.icone}}</v-icon>
                     {{rota.nome}}
                 </v-btn>
-                <v-btn flat @click="deslogar">
-                    TESTE LOGOUT
+                <v-btn flat
+                       v-if="isAuthenticated"
+                       @click="logout"
+                >
+                    <v-icon left>exit_to_app</v-icon>
+                    Logout
                 </v-btn>
             </v-toolbar-items>
 
@@ -99,23 +118,30 @@
 </template>
 
 <script>
-    import {auth} from "~/services/fireinit";
+    import {mapGetters} from "vuex";
 
     export default {
         data: () => ({
-            auth: auth.currentUser != null,
             drawer: false,
             rotas: [
-                {nome: "Cadastrar-se", icone: "person_add", caminho: "/cadastro", auth: false},
-                {nome: "Login", icone: "person", caminho: "/login", auth: false},
-                {nome: "Cadastrar Pet", icone: "pets", caminho: "/cadastrarPet", auth: true},
-                {nome: "Logout", icone: "exit_to_app", caminho: "/logout", auth: true}
+                {nome: "Cadastrar-se", icone: "person_add", caminho: "/cadastro", needAuth: false},
+                {nome: "Login", icone: "person", caminho: "/login", needAuth: false},
+                {nome: "Cadastrar Pet", icone: "pets", caminho: "/cadastrarPet", needAuth: true},
             ]
         }),
+
         methods: {
-            deslogar() {
-                auth.signOut();
+            logout() {
+                this.$store.dispatch("logout");
+                this.$router.push("/");
             }
+        },
+
+        computed: {
+            ...mapGetters([
+                "isAuthenticated",
+                "getLoggedUser"
+            ])
         }
     }
 </script>

@@ -133,6 +133,7 @@
     export default {
         name: "Cadastro",
         mixins: [validationMixin],
+        // middleware: needAnonymous,
 
         data: () => ({
             form: {

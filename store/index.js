@@ -1,18 +1,43 @@
-export const state = () => ({
-    user: null
-});
+import Vuex from 'vuex'
+import {auth} from "~/services/fireinit"
 
-export const mutations = {
-    SET_USER(state, user) {
-        state.user = user || null
-    }
+const createStore = () => {
+    return new Vuex.Store({
+
+        state: () => ({
+            user: null
+        }),
+
+        getters: {
+            isAuthenticated(state) {
+                return !!state.user;
+            },
+            getLoggedUser(state) {
+                return state.user;
+            }
+        },
+
+        mutations: {
+            login(state, user) {
+                state.user = user;
+                console.log("store login")
+            },
+            logout(state) {
+                state.user = null;
+                console.log("store logout")
+            }
+        },
+
+        actions: {
+            login(ctx, user) {
+                ctx.commit("login", user);
+            },
+            logout(ctx) {
+                auth.signOut()
+                    .then(ctx.commit("logout"));
+            }
+        }
+    })
 };
 
-export const getters = {
-    isAuthenticated(state) {
-        return !!state.user
-    },
-    loggedUser(state) {
-        return state.user
-    }
-};
+export default createStore

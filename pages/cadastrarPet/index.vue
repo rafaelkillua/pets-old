@@ -1,21 +1,15 @@
 <template>
-    <section class="container">
-        <h1> PÁGINA PROTEDIGA PELO CABO DACIOLO </h1>
-    </section>
+    <v-layout align-center justify-center>
+        <v-flex xs12>
+            <h1> PÁGINA PROTEGIDA PELO CABO DACIOLO </h1>
+        </v-flex>
+    </v-layout>
 </template>
 
 <script>
-    import auth from "~/middleware/auth";
+    import needAuth from "~/middleware/needAuth";
 
     export default {
-        middleware: auth
+        middleware: needAuth
     }
 </script>
-
-<style scoped>
-    .container {
-        display: flex;
-        align-items: center;
-        align-content: center;
-    }
-</style>

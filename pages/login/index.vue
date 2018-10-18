@@ -1,7 +1,7 @@
 <template>
     <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
-            <v-card class="v-layout-item v-size-50 v-small-size-100">
+            <v-card class="v-layout-item v-size-50 v-small-size-100" v-if="!logged">
 
                 <v-card-title primary-title>
                     <div class="headline">Login</div>
@@ -54,13 +54,17 @@
 
             </v-card>
 
+            <v-card class="v-layout-item v-size-50 v-small-size-100" v-else-if="logged">
+                <h2>Redirecionando...</h2>
+            </v-card>
+
             <v-snackbar
                 :value="logged"
                 :bottom="true"
                 color="success"
             >
                 <v-icon left color="white">check</v-icon>
-                {{ lastUser }} logado com sucesso! <br/> Redirecionando...
+                {{ lastUser }} logado com sucesso!
             </v-snackbar>
 
             <v-snackbar
@@ -85,6 +89,7 @@
     export default {
         name: "Login",
         mixins: [validationMixin],
+        // middleware: needAnonymous,
 
         data: () => ({
             form: {
@@ -124,9 +129,6 @@
                 if (!this.$v.form.senha.$dirty) return errors;
                 !this.$v.form.senha.required && errors.push('Senha obrigatória');
                 return errors;
-            },
-            logar() {
-                console.log("teste");
             }
         },
 
@@ -136,15 +138,16 @@
                 if (this.$refs.form.validate() && !this.$v.$invalid) {
                     auth.signInWithEmailAndPassword(this.form.email, this.form.senha)
                         .then((response) => {
+                            this.$store.dispatch("login", response.user);
                             this.logged = true;
                             this.sending = false;
                             this.lastUser = response.user.email;
-                            setTimeout(() => this.$router.push("/"), 3000);
+                            setTimeout(() => this.$router.push("/"), 2000);
                         })
                         .catch(() => {
                             this.cantLogin = true;
                             this.sending = false;
-                            setTimeout(() => this.cantLogin = false, 3000);
+                            setTimeout(() => this.cantLogin = false, 2000);
                         });
                 } else {
                     this.sending = false;
