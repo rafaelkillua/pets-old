@@ -1,7 +1,7 @@
 <template>
     <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
-            <v-card class="v-layout-item v-size-50 v-small-size-100" v-if="!logged">
+            <v-card class="v-layout-item v-size-50 v-small-size-100">
 
                 <v-card-title primary-title>
                     <div class="headline">Login</div>
@@ -9,7 +9,7 @@
 
                 <v-card-text>
 
-                    <v-form ref="form" v-model="valid" lazy-validation @keyup.native.enter="submit">
+                    <v-form ref="form" lazy-validation @keyup.native.enter="submit">
                         <v-text-field
                             v-model.trim="form.email"
                             :error-messages="emailErrors"
@@ -38,51 +38,21 @@
                         />
                     </v-form>
 
-                    <v-progress-linear
-                        :indeterminate="true"
-                        v-if="sending"
-                        class="d-block"
-                    />
-
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-btn @click="submit" flat color="primary" :disabled="!valid">Login</v-btn>
+                    <v-btn @click="submit" flat color="primary" :disabled="this.$v.$invalid">Login</v-btn>
                     <v-spacer/>
-                    <v-btn @click="reset" flat color="secondary" :disabled="sending">Resetar</v-btn>
+                    <v-btn @click="reset" flat color="secondary">Resetar</v-btn>
                 </v-card-actions>
 
             </v-card>
 
-            <v-card class="v-layout-item v-size-50 v-small-size-100" v-else-if="logged">
-                <h2>Redirecionando...</h2>
-            </v-card>
-
-            <v-snackbar
-                :value="logged"
-                :bottom="true"
-                color="success"
-            >
-                <v-icon left color="white">check</v-icon>
-                {{ lastUser }} logado com sucesso!
-            </v-snackbar>
-
-            <v-snackbar
-                :value="cantLogin"
-                :bottom="true"
-                color="error"
-                @click="cantLogin = !cantLogin"
-            >
-                <v-icon left color="white">error</v-icon>
-                E-mail ou senha inválidos
-            </v-snackbar>
         </v-flex>
     </v-layout>
 </template>
 
 <script>
-    import {auth} from '~/services/fireinit'
-
     import {validationMixin} from "vuelidate";
     import {email, required} from "vuelidate/lib/validators";
 
@@ -96,12 +66,7 @@
                 email: "",
                 senha: ""
             },
-            valid: false,
             showPassword: false,
-            logged: false,
-            sending: false,
-            lastUser: null,
-            cantLogin: false
         }),
 
         validations: {
@@ -136,28 +101,20 @@
             submit() {
                 this.sending = true;
                 if (this.$refs.form.validate() && !this.$v.$invalid) {
-                    auth.signInWithEmailAndPassword(this.form.email, this.form.senha)
-                        .then((response) => {
-                            this.$store.dispatch("login", response.user);
-                            this.logged = true;
-                            this.sending = false;
-                            this.lastUser = response.user.email;
-                            setTimeout(() => this.$router.push("/"), 2000);
+                    this.$store.dispatch("login", {email: this.form.email, senha: this.form.senha})
+                        .then((user) => {
                         })
-                        .catch(() => {
-                            this.cantLogin = true;
-                            this.sending = false;
-                            setTimeout(() => this.cantLogin = false, 2000);
+                        .catch((erro) => {
+                            alert(erro.code + " - " + erro.message)
+                            //dispatch erro
                         });
                 } else {
-                    this.sending = false;
                     this.$v.$touch();
                 }
             },
             reset() {
                 this.$refs.form.reset();
                 this.$v.$reset();
-                this.cantLogin = false;
             }
         }
     }

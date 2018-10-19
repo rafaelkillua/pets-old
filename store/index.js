@@ -20,23 +20,43 @@ const createStore = () => {
         mutations: {
             login(state, user) {
                 state.user = user;
-                console.log("store login")
             },
             logout(state) {
                 state.user = null;
-                console.log("store logout")
+            },
+            setUser: state => {
+                state.user = auth.currentUser;
             }
         },
 
         actions: {
-            login(ctx, user) {
-                ctx.commit("login", user);
+            signUp(ctx, {email, senha}) {
+                return new Promise((resolve, reject) => {
+                    auth.createUserWithEmailAndPassword(email, senha)
+                        .then(response => {
+                            ctx.commit("login", response.user);
+                            resolve(response.user);
+                        })
+                        .catch(error => reject(error))
+                })
+            },
+            login(ctx, {email, senha}) {
+                return new Promise((resolve, reject) => {
+                    auth.signInWithEmailAndPassword(email, senha)
+                        .then(response => {
+                            ctx.commit("login", response.user);
+                            resolve(response.user);
+                        })
+                        .catch(error => {
+                            reject(error);
+                        })
+                })
             },
             logout(ctx) {
                 auth.signOut()
                     .then(ctx.commit("logout"));
             }
-        }
+        },
     })
 };
 

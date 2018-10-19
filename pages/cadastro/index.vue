@@ -9,7 +9,7 @@
 
                 <v-card-text>
 
-                    <v-form ref="form" v-model="valid" lazy-validation @keyup.native.enter="submit">
+                    <v-form ref="form" lazy-validation @keyup.native.enter="submit">
                         <v-text-field
                             v-model.trim="form.nome"
                             :error-messages="nomeErrors"
@@ -77,48 +77,15 @@
                         />
                     </v-form>
 
-                    <v-progress-linear
-                        :indeterminate="true"
-                        v-if="sending"
-                        class="d-block"
-                    />
-
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-btn @click="submit" flat color="primary" :disabled="!valid">Cadastrar</v-btn>
+                    <v-btn @click="submit" flat color="primary" :disabled="this.$v.$invalid">Cadastrar</v-btn>
                     <v-spacer/>
-                    <v-btn @click="reset" flat color="secondary" :disabled="sending">Resetar</v-btn>
+                    <v-btn @click="reset" flat color="secondary">Resetar</v-btn>
                 </v-card-actions>
 
             </v-card>
-
-            <v-snackbar
-                :value="cadastrado"
-                :bottom="true"
-                color="success"
-            >
-                <v-icon left color="white">check</v-icon>
-                {{ lastUser }} cadastrado com sucesso! <br/> Redirecionando...
-            </v-snackbar>
-
-            <v-snackbar
-                :value="emailJaCadastrado"
-                :bottom="true"
-                color="error"
-            >
-                <v-icon left color="white">error</v-icon>
-                Este e-mail já está cadastrado
-            </v-snackbar>
-
-            <v-snackbar
-                :value="senhaFraca"
-                :bottom="true"
-                color="error"
-            >
-                <v-icon left color="white">error</v-icon>
-                Senha fraca
-            </v-snackbar>
 
         </v-flex>
     </v-layout>
@@ -145,11 +112,6 @@
             },
             valid: false,
             showPassword: false,
-            cadastrado: false,
-            sending: false,
-            lastUser: null,
-            emailJaCadastrado: false,
-            senhaFraca: false
         }),
 
         validations: {
@@ -177,6 +139,9 @@
         },
 
         computed: {
+            user() {
+                return this.$store.getters.isAuthenticated
+            },
             nomeErrors() {
                 const errors = [];
                 if (!this.$v.form.nome.$dirty) return errors;
@@ -215,36 +180,22 @@
 
         methods: {
             submit() {
-                this.sending = true;
+                const email = this.form.email;
+                const senha = this.form.senha;
+
                 if (this.$refs.form.validate() && !this.$v.$invalid) {
-                    auth.createUserWithEmailAndPassword(this.form.email, this.form.senha)
-                        .then((response) => {
-                            db.ref('usuarios/' + response.user.uid).set({
-                                nome: this.form.nome,
-                                telefone: this.form.telefone
-                            });
-                            this.cadastrado = true;
-                            this.sending = false;
-                            this.lastUser = response.user.email;
-                            setTimeout(() => this.$router.push("/"), 3000);
+                    this.$store.dispatch("signUp", {email, senha})
+                        .catch(erro => {
+                            alert(erro.code + " - " + erro.message);
+                            // this.$store.dispatch("erro", erro);
                         })
-                        .catch((erro) => {
-                            if (erro.code === "auth/email-already-in-use") this.emailJaCadastrado = true;
-                            else if (erro.code === "auth/weak-password") this.senhaFraca = true;
-                            else alert(erro.code + " - " + erro.message);
-                            this.sending = false;
-                            setTimeout(() => (this.emailJaCadastrado = false) && (this.senhaFraca = false), 3000);
-                        });
                 } else {
-                    this.sending = false;
                     this.$v.$touch();
                 }
             },
             reset() {
                 this.$refs.form.reset();
                 this.$v.$reset();
-                this.emailJaCadastrado = false;
-                this.senhaFraca = false;
             }
         }
     }

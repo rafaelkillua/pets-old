@@ -8,17 +8,17 @@
             temporary
         >
             <v-list class="pa-1">
-                <v-list-tile avatar v-if="isAuthenticated">
+                <v-list-tile avatar v-if="user">
                     <v-list-tile-avatar>
                         <img src="../assets/placeholder_auth.jpg">
                     </v-list-tile-avatar>
 
                     <v-list-tile-content>
-                        <v-list-tile-title>{{getLoggedUser.email}}</v-list-tile-title>
+                        <v-list-tile-title>{{user.email}}</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
 
-                <v-list-tile avatar v-else-if="!isAuthenticated">
+                <v-list-tile avatar v-else-if="!user">
                     <v-list-tile-avatar>
                         <img src="../assets/placeholder.png">
                     </v-list-tile-avatar>
@@ -35,7 +35,6 @@
 
                 <v-list-tile
                     v-for="rota in rotas"
-                    v-if="rota.needAuth === isAuthenticated"
                     :key="rota.nome"
                     @click="$router.push(rota.caminho)"
                 >
@@ -48,18 +47,6 @@
                     </v-list-tile-content>
                 </v-list-tile>
 
-                <v-list-tile
-                    v-if="isAuthenticated"
-                    @click="logout"
-                >
-                    <v-list-tile-action>
-                        <v-icon>exit_to_app</v-icon>
-                    </v-list-tile-action>
-
-                    <v-list-tile-content>
-                        <v-list-tile-title>Logout</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
             </v-list>
         </v-navigation-drawer>
 
@@ -79,18 +66,10 @@
                 <v-btn flat
                        v-for="rota in rotas"
                        :to="rota.caminho"
-                       v-if="rota.needAuth === isAuthenticated"
                        :key="rota.nome"
                 >
                     <v-icon left>{{rota.icone}}</v-icon>
                     {{rota.nome}}
-                </v-btn>
-                <v-btn flat
-                       v-if="isAuthenticated"
-                       @click="logout"
-                >
-                    <v-icon left>exit_to_app</v-icon>
-                    Logout
                 </v-btn>
             </v-toolbar-items>
 
@@ -102,46 +81,48 @@
             </v-container>
         </v-content>
 
-        <v-footer app color="primary">
-            <v-container fill-height>
-                <v-layout align-center justify-end>
-                    <p class="white--text"> &copy;2018 -
-                        <a href="https://rafaelst.com.br" target="_blank" class="white--text">
-                            <strong>Rafael Sampaio Tavares</strong>
-                        </a>
-                    </p>
-                </v-layout>
-            </v-container>
-        </v-footer>
+        <Footer/>
 
     </v-app>
 </template>
 
 <script>
-    import {mapGetters} from "vuex";
+    import Footer from "~/components/Footer";
 
     export default {
+        components: {Footer},
+
         data: () => ({
             drawer: false,
-            rotas: [
-                {nome: "Cadastrar-se", icone: "person_add", caminho: "/cadastro", needAuth: false},
-                {nome: "Login", icone: "person", caminho: "/login", needAuth: false},
-                {nome: "Cadastrar Pet", icone: "pets", caminho: "/cadastrarPet", needAuth: true},
-            ]
         }),
 
         methods: {
             logout() {
                 this.$store.dispatch("logout");
-                this.$router.push("/");
             }
         },
 
         computed: {
-            ...mapGetters([
-                "isAuthenticated",
-                "getLoggedUser"
-            ])
+            user() {
+                return this.$store.getters.getLoggedUser
+            },
+            rotas() {
+                let rotas = [
+                    {nome: "Cadastrar-se", icone: "person_add", caminho: "/cadastro"},
+                    {nome: "Login", icone: "person", caminho: "/login"},
+                ];
+                if (!!this.user) rotas = [
+                    {nome: "Cadastrar Pet", icone: "pets", caminho: "/cadastrarPet"},
+                    {nome: "Logout", icone: "exit_to_app", caminho: "/logout"}
+                ];
+                return rotas;
+            }
+        },
+        watch: {
+            user() {
+                console.log("user changed");
+                this.$router.push("/");
+            }
         }
     }
 </script>
