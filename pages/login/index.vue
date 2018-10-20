@@ -49,9 +49,11 @@
 </template>
 
 <script>
+    import needAnonymous from "~/middleware/needAnonymous";
+
     export default {
         name: "Login",
-        // middleware: needAnonymous,
+        middleware: needAnonymous,
 
         data: () => ({
             form: {

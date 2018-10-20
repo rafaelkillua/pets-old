@@ -1,5 +1,5 @@
 <template>
-    <v-container grid-list-md text-xs-center>
+    <v-container grid-list-md>
         <v-layout align-center justify-center row wrap>
             <v-flex xs12>
                 <h1>Bem vindo ao Pets Cariri!</h1>

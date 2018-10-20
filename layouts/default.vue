@@ -10,7 +10,7 @@
             <v-list class="pa-1">
                 <v-list-tile avatar v-if="user">
                     <v-list-tile-avatar>
-                        <img src="../assets/placeholder_auth.jpg">
+                        <img :src="user.photoURL">
                     </v-list-tile-avatar>
 
                     <v-list-tile-content>
@@ -76,7 +76,7 @@
         </v-toolbar>
 
         <v-content>
-            <v-container fluid fill-height>
+            <v-container fluid fill-height text-xs-center>
                 <nuxt/>
             </v-container>
         </v-content>
@@ -96,15 +96,15 @@
             drawer: false,
         }),
 
-        methods: {
-            logout() {
-                this.$store.dispatch("logout");
-            }
-        },
-
         computed: {
             user() {
                 return this.$store.getters.getLoggedUser
+            },
+            erro() {
+                return this.$store.getters.getErro
+            },
+            sucesso() {
+                return this.$store.getters.getSucesso
             },
             rotas() {
                 let rotas = [
@@ -120,7 +120,7 @@
         },
         watch: {
             user() {
-                console.log("user changed");
+                console.log("[layout default] User changed");
                 this.$router.push("/");
             }
         }

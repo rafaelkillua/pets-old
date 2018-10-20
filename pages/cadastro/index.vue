@@ -81,9 +81,11 @@
 </template>
 
 <script>
+    import needAnonymous from "~/middleware/needAnonymous";
+
     export default {
         name: "Cadastro",
-        // middleware: needAnonymous,
+        middleware: needAnonymous,
 
         data: () => ({
             form: {
