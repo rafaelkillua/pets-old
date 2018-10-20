@@ -9,22 +9,20 @@
 
                 <v-card-text>
 
-                    <v-form ref="form" lazy-validation @keyup.native.enter="submit">
+                    <v-form ref="form" v-model="valid" lazy-validation @keyup.native.enter="submit">
                         <v-text-field
                             v-model.trim="form.email"
-                            :error-messages="emailErrors"
+                            :rules="rules.emailRules"
                             label="E-mail"
                             required
                             prepend-icon="mail"
                             type="email"
                             name="email"
                             autocomplete="email"
-                            @input="$v.form.email.$touch()"
-                            @blur="$v.form.email.$touch()"
                         />
                         <v-text-field
-                            v-model.trim="$v.form.senha.$model"
-                            :error-messages="senhaErrors"
+                            v-model.trim="form.senha"
+                            :rules="rules.senhaRules"
                             label="Senha"
                             required
                             prepend-icon="lock"
@@ -32,8 +30,6 @@
                             :append-icon="showPassword ? 'visibility_off' : 'visibility'"
                             name="senha"
                             hint="Senha tem 8-20 caracteres"
-                            @input="$v.form.senha.$touch()"
-                            @blur="$v.form.senha.$touch()"
                             @click:append="showPassword = !showPassword"
                         />
                     </v-form>
@@ -41,9 +37,9 @@
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-btn @click="submit" flat color="primary" :disabled="this.$v.$invalid">Login</v-btn>
+                    <v-btn @click="submit" flat color="primary" :disabled="!valid">Login</v-btn>
                     <v-spacer/>
-                    <v-btn @click="reset" flat color="secondary">Resetar</v-btn>
+                    <v-btn @click="clear" flat color="secondary">Resetar</v-btn>
                 </v-card-actions>
 
             </v-card>
@@ -53,12 +49,8 @@
 </template>
 
 <script>
-    import {validationMixin} from "vuelidate";
-    import {email, required} from "vuelidate/lib/validators";
-
     export default {
         name: "Login",
-        mixins: [validationMixin],
         // middleware: needAnonymous,
 
         data: () => ({
@@ -66,55 +58,31 @@
                 email: "",
                 senha: ""
             },
-            showPassword: false,
-        }),
-
-        validations: {
-            form: {
-                email: {
-                    required,
-                    email
-                },
-                senha: {
-                    required
-                }
-            }
-        },
-
-        computed: {
-            emailErrors() {
-                const errors = [];
-                if (!this.$v.form.email.$dirty) return errors;
-                !this.$v.form.email.email && errors.push('E-mail inválido');
-                !this.$v.form.email.required && errors.push('E-mail obrigatório');
-                return errors;
+            rules: {
+                emailRules: [
+                    v => !!v || "E-mail é obrigatório",
+                    v => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || "E-mail tem que ser válido"
+                ],
+                senhaRules: [
+                    v => !!v || "Senha é obrigatória"
+                ]
             },
-            senhaErrors() {
-                const errors = [];
-                if (!this.$v.form.senha.$dirty) return errors;
-                !this.$v.form.senha.required && errors.push('Senha obrigatória');
-                return errors;
-            }
-        },
+            showPassword: false,
+            valid: true
+        }),
 
         methods: {
             submit() {
-                this.sending = true;
-                if (this.$refs.form.validate() && !this.$v.$invalid) {
+                if (this.$refs.form.validate()) {
                     this.$store.dispatch("login", {email: this.form.email, senha: this.form.senha})
-                        .then((user) => {
-                        })
                         .catch((erro) => {
                             alert(erro.code + " - " + erro.message)
                             //dispatch erro
                         });
-                } else {
-                    this.$v.$touch();
                 }
             },
-            reset() {
+            clear() {
                 this.$refs.form.reset();
-                this.$v.$reset();
             }
         }
     }

@@ -15,8 +15,7 @@
         "@nuxtjs/vuetify": "^0.4.3",
         "cross-env": "^5.2.0",
         "firebase": "^5.5.4",
-        "nuxt": "^2.2.0",
-        "vuelidate": "^0.7.4"
+        "nuxt": "^2.2.0"
     },
     "devDependencies": {
         "nodemon": "^1.18.4",

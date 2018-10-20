@@ -1,5 +1,5 @@
 import Vuex from 'vuex'
-import {auth} from "~/services/fireinit"
+import {auth, db} from "~/services/fireinit"
 
 const createStore = () => {
     return new Vuex.Store({
@@ -30,12 +30,14 @@ const createStore = () => {
         },
 
         actions: {
-            signUp(ctx, {email, senha}) {
+            signUp(ctx, {email, senha, nome, telefone}) {
                 return new Promise((resolve, reject) => {
                     auth.createUserWithEmailAndPassword(email, senha)
                         .then(response => {
+                            db.ref("usuarios/" + response.user.uid).set({
+                                nome, telefone
+                            });
                             ctx.commit("login", response.user);
-                            resolve(response.user);
                         })
                         .catch(error => reject(error))
                 })
@@ -45,7 +47,6 @@ const createStore = () => {
                     auth.signInWithEmailAndPassword(email, senha)
                         .then(response => {
                             ctx.commit("login", response.user);
-                            resolve(response.user);
                         })
                         .catch(error => {
                             reject(error);
