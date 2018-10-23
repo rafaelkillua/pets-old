@@ -55,23 +55,25 @@
         name: "Login",
         middleware: needAnonymous,
 
-        data: () => ({
-            form: {
-                email: "",
-                senha: ""
-            },
-            rules: {
-                emailRules: [
-                    v => !!v || "E-mail é obrigatório",
-                    v => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || "E-mail tem que ser válido"
-                ],
-                senhaRules: [
-                    v => !!v || "Senha é obrigatória"
-                ]
-            },
-            showPassword: false,
-            valid: true
-        }),
+        data() {
+            return {
+                form: {
+                    email: "",
+                    senha: ""
+                },
+                rules: {
+                    emailRules: [
+                        v => !!v || "E-mail é obrigatório",
+                        v => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || "E-mail tem que ser válido"
+                    ],
+                    senhaRules: [
+                        v => !!v || "Senha é obrigatória"
+                    ]
+                },
+                showPassword: false,
+                valid: true
+            }
+        },
 
         methods: {
             submit() {

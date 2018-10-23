@@ -1,5 +1,6 @@
 import Vuex from 'vuex'
 import {auth, db} from "~/services/fireinit"
+import avatar from "~/static/avatar.jpg"
 
 const createStore = () => {
     return new Vuex.Store({
@@ -11,9 +12,6 @@ const createStore = () => {
         }),
 
         getters: {
-            isAuthenticated(state) {
-                return !!state.user;
-            },
             getLoggedUser(state) {
                 return state.user;
             },
@@ -26,14 +24,26 @@ const createStore = () => {
         },
 
         mutations: {
-            login(state, user) {
+            login: (state, user) => {
                 state.user = user;
             },
-            logout(state) {
+            logout: state => {
                 state.user = null;
             },
             setUser: state => {
                 state.user = auth.currentUser;
+            },
+            setErro: (state, erro) => {
+                state.erro = erro;
+            },
+            removeErro: state => {
+                state.erro = null;
+            },
+            setSucesso: (state, sucesso) => {
+                state.sucesso = sucesso;
+            },
+            removeSucesso: state => {
+                state.sucesso = null;
             }
         },
 
@@ -44,7 +54,7 @@ const createStore = () => {
                         .then(response => {
                             auth.currentUser.updateProfile({
                                 displayName: nome,
-                                photoURL: "https://lh4.googleusercontent.com/7RVXCWsVqMboBOqAdig0eW8Co60qFqjhOtK3vihUHzhNAhmjb3wtDdrirhEdPHSOcD8ziEtgeQveXrca_OS06qvtELepfyqk0YAiA8tOMNME3x320RM=w371"
+                                photoURL: avatar
                             })
                                 .then(() => {
                                     db.ref("telefones/" + auth.currentUser.uid).set({

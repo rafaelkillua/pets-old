@@ -1,6 +1,5 @@
 <template>
     <v-app>
-
         <v-navigation-drawer
             app
             v-model="drawer"
@@ -8,23 +7,14 @@
             temporary
         >
             <v-list class="pa-1">
-                <v-list-tile avatar v-if="user">
-                    <v-list-tile-avatar>
+                <v-list-tile avatar>
+                    <v-list-tile-avatar v-if="user">
                         <img :src="user.photoURL">
                     </v-list-tile-avatar>
 
                     <v-list-tile-content>
-                        <v-list-tile-title>{{user.email}}</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
-
-                <v-list-tile avatar v-else-if="!user">
-                    <v-list-tile-avatar>
-                        <img src="../assets/placeholder.png">
-                    </v-list-tile-avatar>
-
-                    <v-list-tile-content>
-                        <v-list-tile-title>Cadastre-se ou faça login</v-list-tile-title>
+                        <v-list-tile-title v-if="user">{{user.email}}</v-list-tile-title>
+                        <v-list-tile-title v-else-if="!user">Cadastre-se ou faça login</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
             </v-list>

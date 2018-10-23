@@ -87,44 +87,46 @@
         name: "Cadastro",
         middleware: needAnonymous,
 
-        data: () => ({
-            form: {
-                nome: "",
-                telefone: "",
-                email: "",
-                senha: "",
-                repetirSenha: ""
-            },
-            rules: {
-                nomeRules: [
-                    v => !!v || "Nome é obrigatório",
-                    v => v && v.length >= 5 || "Nome está muito curto",
-                    v => v && v.length <= 30 || "Nome está muito longo"
-                ],
-                telefoneRules: [
-                    v => !!v || "Telefone é obrigatório",
-                    v => v && v.length === 10 || v.length === 11 || "Telefone inválido"
-                ],
-                emailRules: [
-                    v => !!v || "E-mail é obrigatório",
-                    v => v && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || "E-mail tem que ser válido"
-                ],
-                senhaRules: [
-                    v => !!v || "Senha é obrigatória",
-                    v => v && v.length >= 8 || "Senha deve ter mais de 8 caracteres",
-                    v => v && v.length <= 20 || "Senha deve ter menos de 20 caracteres"
-                ],
-                repetirSenhaRules: [
-                    v => !!v || "Repetir senha é obrigatório",
-                ]
-            },
-            valid: true,
-            showPassword: false,
-        }),
+        data() {
+            return {
+                form: {
+                    nome: "",
+                    telefone: "",
+                    email: "",
+                    senha: "",
+                    repetirSenha: ""
+                },
+                rules: {
+                    nomeRules: [
+                        v => !!v || "Nome é obrigatório",
+                        v => v && v.length >= 5 || "Nome está muito curto",
+                        v => v && v.length <= 30 || "Nome está muito longo"
+                    ],
+                    telefoneRules: [
+                        v => !!v || "Telefone é obrigatório",
+                        v => v && v.length === 10 || v.length === 11 || "Telefone inválido"
+                    ],
+                    emailRules: [
+                        v => !!v || "E-mail é obrigatório",
+                        v => v && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || "E-mail tem que ser válido"
+                    ],
+                    senhaRules: [
+                        v => !!v || "Senha é obrigatória",
+                        v => v && v.length >= 8 || "Senha deve ter mais de 8 caracteres",
+                        v => v && v.length <= 20 || "Senha deve ter menos de 20 caracteres"
+                    ],
+                    repetirSenhaRules: [
+                        v => !!v || "Repetir senha é obrigatório",
+                    ]
+                },
+                valid: true,
+                showPassword: false
+            }
+        },
 
         computed: {
             user() {
-                return this.$store.getters.isAuthenticated
+                return !!this.$store.getters.getLoggedUser
             },
         },
 
