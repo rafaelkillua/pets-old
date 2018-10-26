@@ -8,7 +8,8 @@ const createStore = () => {
         state: () => ({
             user: null,
             erro: null,
-            sucesso: null
+            sucesso: null,
+            loading: true
         }),
 
         getters: {
@@ -20,51 +21,50 @@ const createStore = () => {
             },
             getSucesso(state) {
                 return state.sucesso;
+            },
+            getLoading(state) {
+                return state.loading;
             }
         },
 
         mutations: {
-            login: (state, user) => {
+            setUser: (state, user) => {
                 state.user = user;
-            },
-            logout: state => {
-                state.user = null;
-            },
-            setUser: state => {
-                state.user = auth.currentUser;
+                state.loading = false;
             },
             setErro: (state, erro) => {
                 state.erro = erro;
             },
-            removeErro: state => {
-                state.erro = null;
-            },
             setSucesso: (state, sucesso) => {
                 state.sucesso = sucesso;
-            },
-            removeSucesso: state => {
-                state.sucesso = null;
             }
         },
 
         actions: {
+            afterLogin(ctx, {uid, email}) {
+                let usuario;
+                db.ref('perfil/' + uid).on('value', snapshot => {
+                    usuario = {
+                        uid,
+                        email,
+                        nome: snapshot.val().nome,
+                        avatar: snapshot.val().avatar,
+                        telefone: snapshot.val().telefone
+                    };
+                    ctx.commit("setUser", usuario);
+                });
+            },
+
             signUp(ctx, {email, senha, nome, telefone}) {
                 return new Promise((resolve, reject) => {
                     auth.createUserWithEmailAndPassword(email, senha)
-                        .then(response => {
-                            auth.currentUser.updateProfile({
-                                displayName: nome,
-                                photoURL: avatar
+                        .then(() => {
+                            db.ref("perfil/" + auth.currentUser.uid).set({
+                                nome,
+                                telefone,
+                                avatar
                             })
-                                .then(() => {
-                                    db.ref("telefones/" + auth.currentUser.uid).set({
-                                        telefone
-                                    })
-                                        .then(() => ctx.commit("login", response.user))
-                                        .catch(erro => console.log("Erro ao guardar telefone: " + erro.message))
-                                })
-                                .catch(erro => console.log("Erro ao atualizar perfil: " + erro));
-
+                                .catch(erro => console.log("Erro ao guardar dados: " + erro.message))
                         })
                         .catch(error => reject(error))
                 })
@@ -73,9 +73,6 @@ const createStore = () => {
             login(ctx, {email, senha}) {
                 return new Promise((resolve, reject) => {
                     auth.signInWithEmailAndPassword(email, senha)
-                        .then(response => {
-                            ctx.commit("login", response.user);
-                        })
                         .catch(error => {
                             reject(error);
                         })
@@ -84,7 +81,7 @@ const createStore = () => {
 
             logout(ctx) {
                 auth.signOut()
-                    .then(ctx.commit("logout"));
+                    .then(ctx.commit("setUser", null));
             },
         },
     })

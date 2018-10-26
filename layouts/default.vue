@@ -7,14 +7,21 @@
             temporary
         >
             <v-list class="pa-1">
-                <v-list-tile avatar>
-                    <v-list-tile-avatar v-if="user">
-                        <img :src="user.photoURL">
+                <v-list-tile avatar v-if="user" nuxt to="/perfil">
+                    <v-list-tile-avatar>
+                        <img :src="user.avatar">
                     </v-list-tile-avatar>
-
                     <v-list-tile-content>
-                        <v-list-tile-title v-if="user">{{user.email}}</v-list-tile-title>
-                        <v-list-tile-title v-else-if="!user">Cadastre-se ou faça login</v-list-tile-title>
+                        <v-list-tile-title>{{user.email}}</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+
+                <v-list-tile avatar v-if="!user" nuxt to="/login">
+                    <v-list-tile-avatar v-if="!user">
+                        <img src="~static/avatar.jpg">
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                        <v-list-tile-title to="/login">Cadastre-se ou faça login</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
             </v-list>
@@ -42,12 +49,14 @@
 
         <v-toolbar app dark color="primary">
 
-            <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
+            <v-toolbar-side-icon @click="drawer = !drawer" class="hidden-md-and-up"></v-toolbar-side-icon>
 
-            <v-toolbar-title dark>
-                <nuxt-link to="/" class="white--text">
+            <v-toolbar-title dark ripple>
+                <v-btn to="/" depressed flat large class="white--text">
+                    <!--<nuxt-link to="/" class="white&#45;&#45;text">-->
                     PETS CARIRI
-                </nuxt-link>
+                    <!--</nuxt-link>-->
+                </v-btn>
             </v-toolbar-title>
 
             <v-spacer></v-spacer>
@@ -110,7 +119,6 @@
         },
         watch: {
             user() {
-                console.log("[layout default] User changed");
                 this.$router.push("/");
             }
         }

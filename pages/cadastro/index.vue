@@ -71,6 +71,8 @@
                 <v-card-actions>
                     <v-btn @click="submit" flat color="primary" :disabled="!valid">Cadastrar</v-btn>
                     <v-spacer/>
+                    <v-btn nuxt to="/login" outline color="error">Faça Login</v-btn>
+                    <v-spacer/>
                     <v-btn @click="clear" flat color="secondary">Resetar</v-btn>
                 </v-card-actions>
 

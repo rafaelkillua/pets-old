@@ -39,6 +39,8 @@
                 <v-card-actions>
                     <v-btn @click="submit" flat color="primary" :disabled="!valid">Login</v-btn>
                     <v-spacer/>
+                    <v-btn nuxt to="/cadastro" outline color="error">Cadastre-se</v-btn>
+                    <v-spacer/>
                     <v-btn @click="clear" flat color="secondary">Resetar</v-btn>
                 </v-card-actions>
 

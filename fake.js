@@ -30,3 +30,6 @@ Vue.component("v-list-tile-avatar", {});
 Vue.component("v-list-tile-content", {});
 Vue.component("v-list-tile-action", {});
 Vue.component("v-divider", {});
+Vue.component("v-avatar", {});
+Vue.component("v-img", {});
+Vue.component("v-progress-circular", {});
