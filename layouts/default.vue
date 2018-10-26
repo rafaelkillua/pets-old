@@ -106,14 +106,19 @@
                 return this.$store.getters.getSucesso
             },
             rotas() {
-                let rotas = [
-                    {nome: "Cadastrar-se", icone: "person_add", caminho: "/cadastro"},
-                    {nome: "Login", icone: "person", caminho: "/login"},
-                ];
-                if (!!this.user) rotas = [
-                    {nome: "Cadastrar Pet", icone: "pets", caminho: "/cadastrarPet"},
-                    {nome: "Logout", icone: "exit_to_app", caminho: "/logout"}
-                ];
+                let rotas = [];
+                if (!!this.user) {
+                    rotas.push(
+                        {nome: "Cadastrar Pet", icone: "pets", caminho: "/cadastrarPet"},
+                        {nome: "Perfil", icone: "person", caminho: "/perfil"},
+                        {nome: "Logout", icone: "exit_to_app", caminho: "/logout"}
+                    );
+                } else {
+                    rotas.push(
+                        {nome: "Cadastrar-se", icone: "person_add", caminho: "/cadastro"},
+                        {nome: "Login", icone: "person", caminho: "/login"}
+                    );
+                }
                 return rotas;
             }
         },
