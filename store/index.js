@@ -41,6 +41,14 @@ const createStore = () => {
         },
 
         actions: {
+            nuxtServerInit ({ commit }, { req }) {
+                console.lig("entrou");
+                if (req.user) {
+                    console.log("ok");
+                    commit('afterLogin', req.user)
+                }
+            },
+
             afterLogin(ctx, {uid, email}) {
                 let usuario;
                 db.ref('perfil/' + uid).on('value', snapshot => {
@@ -81,7 +89,7 @@ const createStore = () => {
 
             logout(ctx) {
                 auth.signOut()
-                    .then(ctx.commit("setUser", null));
+                    .then(ctx.commit("setUser", "nouser"));
             },
         },
     })

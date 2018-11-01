@@ -3,7 +3,7 @@ import {auth} from '~/services/fireinit'
 export default async context => {
     const {store} = context;
 
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
         auth.useDeviceLanguage();
         auth.onAuthStateChanged(user => {
             if (user) {
