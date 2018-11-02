@@ -1,12 +1,12 @@
 <template>
     <v-navigation-drawer
         app
-        :value="drawer"
+        v-model="drawerChild"
         absolute
         temporary
     >
         <v-list class="pa-1">
-            <v-list-tile avatar v-if="user" nuxt to="/perfil">
+            <v-list-tile avatar v-if="user" @click="$router.push('/perfil')">
                 <v-list-tile-avatar>
                     <img :src="user.avatar">
                 </v-list-tile-avatar>
@@ -15,7 +15,7 @@
                 </v-list-tile-content>
             </v-list-tile>
 
-            <v-list-tile avatar v-if="!user" nuxt to="/login">
+            <v-list-tile avatar v-if="!user" @click="$router.push('/login')">
                 <v-list-tile-avatar v-if="!user">
                     <img src="~static/avatar.jpg">
                 </v-list-tile-avatar>
@@ -32,7 +32,8 @@
             <v-list-tile
                 v-for="rota in rotas"
                 :key="rota.nome"
-                @click="$router.push(rota.caminho)"
+                :to="rota.caminho"
+                nuxt
             >
                 <v-list-tile-action>
                     <v-icon>{{rota.icone}}</v-icon>
@@ -50,5 +51,22 @@
 <script>
     export default {
         props: ["user", "rotas", "drawer"],
+
+        data() {
+            return {
+                drawerChild: null,
+                itemList: []
+            }
+        },
+
+        watch: {
+            drawer(value) {
+                this.drawerChild = value;
+            },
+
+            drawerChild(value) {
+                this.$emit('toggleDrawer', value)
+            }
+        }
     }
 </script>

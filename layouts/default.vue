@@ -1,40 +1,49 @@
 <template>
     <v-app>
 
-        <Drawer :user="user" :rotas="rotas" :drawer="drawer"/>
+        <Drawer :user="user" :rotas="rotas" :drawer="drawer" @toggleDrawer="drawer = $event"/>
 
-        <v-toolbar app dark color="primary">
-
-            <v-toolbar-side-icon @click="drawer = !drawer" class="hidden-md-and-up"></v-toolbar-side-icon>
-
-            <v-toolbar-title dark ripple>
-                <v-btn to="/" depressed flat large class="white--text">
-                    <!--<nuxt-link to="/" class="white&#45;&#45;text">-->
-                    PETS CARIRI
-                    <!--</nuxt-link>-->
-                </v-btn>
-            </v-toolbar-title>
-
-            <v-spacer></v-spacer>
-
-            <v-toolbar-items class="hidden-sm-and-down">
-                <v-btn flat
-                       v-for="rota in rotas"
-                       :to="rota.caminho"
-                       :key="rota.nome"
-                >
-                    <v-icon left>{{rota.icone}}</v-icon>
-                    {{rota.nome}}
-                </v-btn>
-            </v-toolbar-items>
-
-        </v-toolbar>
+        <Toolbar :toggleDrawer="toggleDrawer" :title="title" :rotas="rotas"/>
 
         <v-content>
             <v-container fluid fill-height text-xs-center>
                 <nuxt/>
             </v-container>
         </v-content>
+
+        <v-snackbar
+            :value="sucesso != null"
+            color="success"
+            :bottom="true"
+            :multi-line="true"
+            :timeout="5000"
+        >
+            {{sucesso ? sucesso : ""}}
+            <v-btn
+                color="white"
+                flat
+                @click="() => this.$store.dispatch('limparErros')"
+            >
+                X
+            </v-btn>
+        </v-snackbar>
+
+        <v-snackbar
+            :value="erro != null"
+            color="error"
+            :bottom="true"
+            :multi-line="true"
+            :timeout="5000"
+        >
+            {{erro ? erro : ""}}
+            <v-btn
+                color="white"
+                flat
+                @click="() => this.$store.dispatch('limparErros')"
+            >
+                X
+            </v-btn>
+        </v-snackbar>
 
         <Footer/>
 
@@ -44,11 +53,13 @@
 <script>
     import Footer from "~/components/Footer";
     import Drawer from "~/components/Drawer";
+    import Toolbar from "~/components/Toolbar";
 
     export default {
-        components: {Footer, Drawer},
+        components: {Footer, Drawer, Toolbar},
 
         data: () => ({
+            title: "PETS CARIRI",
             drawer: false,
         }),
 
@@ -66,7 +77,7 @@
                 let rotas = [];
                 if (!!this.user) {
                     rotas.push(
-                        {nome: "Cadastrar Pet", icone: "pets", caminho: "/cadastrarPet"},
+                        {nome: "Protegido", icone: "lock", caminho: "/protegido"},
                         {nome: "Perfil", icone: "person", caminho: "/perfil"},
                         {nome: "Logout", icone: "exit_to_app", caminho: "/logout"}
                     );
@@ -79,6 +90,13 @@
                 return rotas;
             }
         },
+
+        methods: {
+            toggleDrawer(value) {
+                this.drawer = value
+            }
+        },
+
         watch: {
             user() {
                 this.$router.push("/");

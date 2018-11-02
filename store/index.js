@@ -1,5 +1,5 @@
 import Vuex from 'vuex'
-import {auth, db} from "~/services/fireinit"
+import {auth, db, storage} from "~/services/fireinit"
 import avatar from "~/static/avatar.jpg"
 
 const createStore = () => {
@@ -9,7 +9,7 @@ const createStore = () => {
             user: null,
             erro: null,
             sucesso: null,
-            loading: true
+            progressoUpload: 0
         }),
 
         getters: {
@@ -22,33 +22,27 @@ const createStore = () => {
             getSucesso(state) {
                 return state.sucesso;
             },
-            getLoading(state) {
-                return state.loading;
-            }
+            getProgresso(state) {
+                return state.progressoUpload;
+            },
         },
 
         mutations: {
             setUser: (state, user) => {
                 state.user = user;
-                state.loading = false;
             },
             setErro: (state, erro) => {
                 state.erro = erro;
             },
             setSucesso: (state, sucesso) => {
                 state.sucesso = sucesso;
+            },
+            setProgress: (state, progresso) => {
+                state.progressoUpload = progresso
             }
         },
 
         actions: {
-            nuxtServerInit ({ commit }, { req }) {
-                console.lig("entrou");
-                if (req.user) {
-                    console.log("ok");
-                    commit('afterLogin', req.user)
-                }
-            },
-
             afterLogin(ctx, {uid, email}) {
                 let usuario;
                 db.ref('perfil/' + uid).on('value', snapshot => {
@@ -60,6 +54,7 @@ const createStore = () => {
                         telefone: snapshot.val().telefone
                     };
                     ctx.commit("setUser", usuario);
+                    ctx.dispatch("sucesso", usuario.nome + " logado com sucesso!")
                 });
             },
 
@@ -89,8 +84,50 @@ const createStore = () => {
 
             logout(ctx) {
                 auth.signOut()
-                    .then(ctx.commit("setUser", "nouser"));
+                    .then(ctx.commit("setUser", null));
             },
+
+            sucesso(ctx, sucesso) {
+                ctx.commit('setSucesso', sucesso);
+            },
+
+            erro(ctx, erro) {
+                ctx.commit('setErro', erro);
+            },
+
+            limparErros(ctx) {
+                ctx.commit('setSucesso', null);
+                ctx.commit('setErro', null);
+            },
+
+            editProfile(ctx, {nome, telefone, avatar}) {
+
+                if (avatar) {
+                    const uploadTask = storage.ref("avatar/" + auth.currentUser.uid).put(avatar);
+                    uploadTask.on('state_changed', snapshot => {
+                        let progresso = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        ctx.commit("setProgress", progresso);
+                    }, error => {
+                        console.log(error)
+                    }, () => {
+                        uploadTask.snapshot.ref.getDownloadURL()
+                            .then(url => {
+                                db.ref("perfil/" + auth.currentUser.uid).update({
+                                    nome,
+                                    telefone,
+                                    avatar: url
+                                })
+                                    .then(() => ctx.dispatch("sucesso", "Perfil editado com sucesso!"))
+                            });
+                    });
+
+                } else {
+                    db.ref("perfil/" + auth.currentUser.uid).update({
+                        nome,
+                        telefone,
+                    }).then(() => ctx.dispatch("sucesso", "Perfil editado com sucesso!"))
+                }
+            }
         },
     })
 };

@@ -31,7 +31,7 @@
                         </button>
                     </v-card>
 
-                    <input ref="input" type="file" :accept="accept" @change="onFileChange">
+                    <input ref="input" type="file" accept="image/*" @change="onFileChange">
 
                     <v-form ref="form" v-model="valid" lazy-validation @keyup.native.enter="submit">
                         <v-text-field
@@ -66,15 +66,20 @@
                             prepend-icon="mail"
                             type="email"
                             autocomplete="email"
+                            disabled
                         />
                     </v-form>
 
                 </v-card-text>
 
+                <div class="progress">
+                    <v-progress-linear v-model="progresso" v-if="submitted" height="12"></v-progress-linear>
+                </div>
+
                 <v-card-actions>
-                    <v-btn @click="submit" flat color="primary" :disabled="!valid">Editar</v-btn>
+                    <v-btn @click="submit" flat color="primary" :disabled="!valid || submitted">Editar</v-btn>
                     <v-spacer/>
-                    <v-btn @click="clear" flat color="secondary">Desfazer Alterações</v-btn>
+                    <v-btn @click="clear" flat color="secondary" :disabled="submitted">Desfazer Alterações</v-btn>
                 </v-card-actions>
 
             </v-card>
@@ -96,14 +101,12 @@
 
         data() {
             return {
-                accept: false,
                 form: {
                     avatar: "",
                     nome: "",
                     telefone: "",
                     email: "",
-                    senha: "",
-                    repetirSenha: ""
+                    arquivo: null
                 },
                 rules: {
                     nomeRules: [
@@ -115,52 +118,41 @@
                         v => !!v || "Telefone é obrigatório",
                         v => v && v.length === 10 || v.length === 11 || "Telefone inválido"
                     ],
-                    emailRules: [
-                        v => !!v || "E-mail é obrigatório",
-                        v => v && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || "E-mail tem que ser válido"
-                    ],
-                    senhaRules: [
-                        v => !!v || "Senha é obrigatória",
-                        v => v && v.length >= 8 || "Senha deve ter mais de 8 caracteres",
-                        v => v && v.length <= 20 || "Senha deve ter menos de 20 caracteres"
-                    ],
-                    repetirSenhaRules: [
-                        v => !!v || "Repetir senha é obrigatório",
-                    ]
                 },
                 valid: true,
-                showPassword: false
+                submitted: false
             }
         },
 
         computed: {
             user() {
                 return this.$store.getters.getLoggedUser
+            },
+            progresso() {
+                return this.$store.getters.getProgresso
             }
         },
 
         methods: {
-            confirmaSenha() {
-                return (this.form.repetirSenha === this.form.senha) ? "" : "As senhas devem ser iguais"
-            },
             submit() {
-                const email = this.form.email;
-                const senha = this.form.senha;
+                this.submitted = true;
+
                 const nome = this.form.nome;
                 const telefone = this.form.telefone;
+                const avatar = this.form.arquivo; // IMPORTANTE!!!
 
-                // if (this.$refs.form.validate()) {
-                //     this.$store.dispatch("signUp", {email, senha, nome, telefone})
-                //         .catch(erro => {
-                //             alert(erro.code + " - " + erro.message);
-                //             // this.$store.dispatch("erro", erro);
-                //         })
-                // }
+                if (this.$refs.form.validate()) {
+                    this.$store.dispatch("editProfile", {nome, telefone, avatar})
+                        .catch(erro => {
+                        })
+                }
             },
+
             clear() {
                 this.$refs.form.resetValidation();
                 this.setForm();
             },
+
             setForm() {
                 this.form = {
                     nome: this.user.nome,
@@ -169,11 +161,29 @@
                     telefone: this.user.telefone
                 };
             },
+
             clickImage() {
                 this.$refs.input.click();
             },
-            onFileChange($event){
-                console.log($event.target.files[0]);
+
+            onFileChange(e) {
+                const files = e.target.files;
+                if (files[0] !== undefined) {
+                    this.imageName = files[0].name;
+                    if (this.imageName.lastIndexOf('.') <= 0) {
+                        return
+                    }
+                    const fr = new FileReader();
+                    fr.readAsDataURL(files[0]);
+                    fr.addEventListener('load', () => {
+                        this.form.avatar = fr.result; // arquivo a ser mostrado
+                        this.form.arquivo = files[0] // arquivo a se fazer upload
+                    })
+                } else {
+                    this.imageName = '';
+                    this.form.arquivo = null;
+                    this.form.avatar = ''
+                }
             }
         }
     }
@@ -188,6 +198,10 @@
     input[type=file] {
         position: absolute;
         left: -99999px;
+    }
+
+    .progress {
+        margin: 0 40px;
     }
 
 </style>
