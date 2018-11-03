@@ -6,21 +6,12 @@
         temporary
     >
         <v-list class="pa-1">
-            <v-list-tile avatar v-if="user" @click="$router.push('/perfil')">
+            <v-list-tile avatar @click="$router.push(user ? '/perfil' : '/login')">
                 <v-list-tile-avatar>
-                    <img :src="user.avatar">
+                    <img :src="user ? user.avatar : '/avatar.jpg'">
                 </v-list-tile-avatar>
                 <v-list-tile-content>
-                    <v-list-tile-title>{{user.email}}</v-list-tile-title>
-                </v-list-tile-content>
-            </v-list-tile>
-
-            <v-list-tile avatar v-if="!user" @click="$router.push('/login')">
-                <v-list-tile-avatar v-if="!user">
-                    <img src="~static/avatar.jpg">
-                </v-list-tile-avatar>
-                <v-list-tile-content>
-                    <v-list-tile-title to="/login">Cadastre-se ou faça login</v-list-tile-title>
+                    <v-list-tile-title>{{user ? user.email : 'Cadastre-se ou faça login!'}}</v-list-tile-title>
                 </v-list-tile-content>
             </v-list-tile>
         </v-list>
@@ -56,7 +47,6 @@
         data() {
             return {
                 drawerChild: null,
-                itemList: []
             }
         },
 

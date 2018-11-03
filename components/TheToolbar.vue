@@ -16,25 +16,14 @@
 
         <v-toolbar-items class="hidden-sm-and-down">
             <v-btn flat
-                   v-for="rota in rotas"
+                   v-for="rota in rotasToolbar"
                    :to="rota.dispatch || rota.caminho"
                    nuxt
                    :key="rota.nome"
-                   v-if="!rota.drawerOnly"
                    @click="rota.dispatch ? $store.dispatch(rota.dispatch) : false"
             >
                 <v-icon left>{{rota.icone}}</v-icon>
                 {{rota.nome}}
-            </v-btn>
-            <v-btn flat
-                   @click="() => this.$store.dispatch('sucesso', 'Testando o sucesso')"
-            >
-                Sucesso
-            </v-btn>
-            <v-btn flat
-                   @click="() => this.$store.dispatch('erro', 'Testando o erro ')"
-            >
-                Erro
             </v-btn>
         </v-toolbar-items>
 
@@ -43,6 +32,12 @@
 
 <script>
     export default {
-        props: ["title", "rotas", "toggleDrawer"]
+        props: ["title", "rotas", "toggleDrawer"],
+
+        computed: {
+            rotasToolbar() {
+                return this.rotas.filter(rota => (!rota.drawerOnly))
+            }
+        }
     }
 </script>

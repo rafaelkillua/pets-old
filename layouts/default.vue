@@ -1,9 +1,9 @@
 <template>
     <v-app>
 
-        <Drawer :user="user" :rotas="rotas" :drawer="drawer" @toggleDrawer="drawer = $event"/>
+        <TheDrawer :user="user" :rotas="rotas" :drawer="drawer" @toggleDrawer="drawer = $event"/>
 
-        <Toolbar :toggleDrawer="toggleDrawer" :title="title" :rotas="rotas"/>
+        <TheToolbar :toggleDrawer="toggleDrawer" :title="title" :rotas="rotas"/>
 
         <v-content>
             <v-container fluid fill-height text-xs-center>
@@ -12,56 +12,47 @@
         </v-content>
 
         <v-snackbar
-            :value="sucesso != null"
-            color="success"
+            v-model="snackbarShow"
+            :color="notificacao ? notificacao.tipo : 'info'"
             :bottom="true"
             :multi-line="true"
             :timeout="5000"
-            @click="() => this.$store.dispatch('limparErros')"
+            @click="snackbarShow = false"
         >
-            {{sucesso ? sucesso : ""}}
+            {{notificacao ? notificacao.mensagem : "ERROUUUU"}}
         </v-snackbar>
 
-        <v-snackbar
-            :value="erro != null"
-            color="error"
-            :bottom="true"
-            :multi-line="true"
-            :timeout="5000"
-            @click="() => this.$store.dispatch('limparErros')"
-        >
-            {{erro ? erro : ""}}
-        </v-snackbar>
-
-        <Footer/>
+        <TheFooter/>
 
     </v-app>
 </template>
 
 <script>
-    import Footer from "~/components/Footer";
-    import Drawer from "~/components/Drawer";
-    import Toolbar from "~/components/Toolbar";
+    import TheFooter from "~/components/TheFooter";
+    import TheDrawer from "~/components/TheDrawer";
+    import TheToolbar from "~/components/TheToolbar";
+    import TheSnackbar from "~/components/TheSnackbar";
 
     export default {
-        components: {Footer, Drawer, Toolbar},
+        components: {TheFooter, TheDrawer, TheToolbar, TheSnackbar},
 
         data: () => ({
             title: "PETS CARIRI",
             drawer: false,
+            snackbarShow: false
         }),
 
         computed: {
             user() {
-                return this.$store.getters.getLoggedUser
+                return this.$store.getters.getLoggedUser;
             },
 
-            erro() {
-                return this.$store.getters.getErro
+            notificacao() {
+                return this.$store.getters.getNotificacao;
             },
 
-            sucesso() {
-                return this.$store.getters.getSucesso
+            mostrarNotificacao() {
+                return this.$store.getters.getMostrarNotificacao;
             },
 
             rotas() {
@@ -87,8 +78,18 @@
         methods: {
             toggleDrawer(value) {
                 this.drawer = value
-            }
+            },
         },
+
+        watch: {
+            mostrarNotificacao(value) {
+                if (value) this.snackbarShow = value;
+            },
+
+            snackbarShow(value) {
+                if (!value) this.$store.dispatch("limparNotificacao");
+            }
+        }
     }
 </script>
 

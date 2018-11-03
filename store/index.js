@@ -7,21 +7,24 @@ const createStore = () => {
 
         state: () => ({
             user: null,
-            erro: null,
-            sucesso: null,
-            progressoUpload: 0
+            progressoUpload: 0,
+            notificacoes: [],
+            mostrarNotificacao: false
         }),
 
         getters: {
             getLoggedUser(state) {
                 return state.user;
             },
-            getErro(state) {
-                return state.erro;
+
+            getNotificacao(state) {
+                return state.notificacoes[0];
             },
-            getSucesso(state) {
-                return state.sucesso;
+
+            getMostrarNotificacao(state) {
+                return state.mostrarNotificacao;
             },
+
             getProgresso(state) {
                 return state.progressoUpload;
             },
@@ -31,14 +34,23 @@ const createStore = () => {
             setUser: (state, user) => {
                 state.user = user;
             },
-            setErro: (state, erro) => {
-                state.erro = erro;
+
+            setNotificacao: (state, notificacao) => {
+                state.notificacoes.push(notificacao);
+                state.mostrarNotificacao = true;
             },
-            setSucesso: (state, sucesso) => {
-                state.sucesso = sucesso;
+
+            limparNotificacao: (state) => {
+                state.notificacoes.shift();
+                state.mostrarNotificacao = false;
             },
+
+            mostrarNotificacao: (state) => {
+                state.mostrarNotificacao = true;
+            },
+
             setProgress: (state, progresso) => {
-                state.progressoUpload = progresso
+                state.progressoUpload = progresso;
             }
         },
 
@@ -47,17 +59,16 @@ const createStore = () => {
                 this.$router.push(this.$router.history.current.query.redirect || "/");
             },
 
-            sucesso(ctx, sucesso) {
-                ctx.commit('setSucesso', sucesso);
+            notificacao(ctx, {tipo, mensagem}) {
+                const notificacao = {tipo, mensagem};
+                ctx.commit('setNotificacao', notificacao);
             },
 
-            erro(ctx, erro) {
-                ctx.commit('setErro', erro);
-            },
-
-            limparErros(ctx) {
-                ctx.commit('setSucesso', null);
-                ctx.commit('setErro', null);
+            limparNotificacao(ctx) {
+                ctx.commit('limparNotificacao');
+                setTimeout(() => {
+                    if (ctx.state.notificacoes.length) ctx.commit("mostrarNotificacao")
+                }, 500);
             },
 
             afterLogin(ctx, {uid, email}) {
@@ -73,12 +84,12 @@ const createStore = () => {
                         telefone: snapshot.val().telefone
                     };
                     ctx.commit("setUser", usuario);
-                    ctx.dispatch("sucesso", usuario.nome + " logado com sucesso!");
+                    ctx.dispatch("notificacao", {
+                        tipo: "success",
+                        mensagem: usuario.nome + " logado com sucesso!"
+                    });
                     ctx.dispatch("redirecionar");
                 })
-                // .then(() => {
-                //
-                // })
             },
 
             signUp(ctx, {email, senha, nome, telefone}) {
@@ -90,10 +101,16 @@ const createStore = () => {
                                 telefone,
                                 avatar
                             })
-                                .catch(erro => ctx.dispatch("erro", "Erro ao atualizar perfil: (" + erro.code + ") " + erro.message))
+                                .catch(erro => ctx.dispatch("notificacao", {
+                                    tipo: "error",
+                                    mensagem: "Erro ao salvar dados de cadastro: (" + erro.code + ") " + erro.message
+                                }))
                         })
                         .catch(erro => {
-                            ctx.dispatch("erro", "Erro ao criar usuário: (" + erro.code + ") " + erro.message);
+                            ctx.dispatch("notificacao", {
+                                tipo: "error",
+                                mensagem: "Erro ao criar usuário: (" + erro.code + ") " + erro.message
+                            });
                             reject(erro)
                         })
                 })
@@ -103,7 +120,10 @@ const createStore = () => {
                 return new Promise((resolve, reject) => {
                     auth.signInWithEmailAndPassword(email, senha)
                         .catch(erro => {
-                            ctx.dispatch("erro", "Erro ao logar: (" + erro.code + ") " + erro.message);
+                            ctx.dispatch("notificacao", {
+                                tipo: "error",
+                                mensagem: "Erro ao logar: (" + erro.code + ") " + erro.message
+                            });
                             reject(erro);
                         })
                 })
@@ -115,7 +135,10 @@ const createStore = () => {
                         ctx.commit("setUser", null);
                         ctx.dispatch("redirecionar");
                     })
-                    .catch((erro) => ctx.dispatch("erro", "Erro ao deslogar: (" + erro.code + ") " + erro.message));
+                    .catch((erro) => ctx.dispatch("notificacao", {
+                        tipo: "error",
+                        mensagem: "Erro ao deslogar: (" + erro.code + ") " + erro.message
+                    }));
             },
 
             editProfile(ctx, {nome, telefone, avatar}) {
@@ -126,7 +149,10 @@ const createStore = () => {
                         let progresso = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                         ctx.commit("setProgress", progresso);
                     }, erro => {
-                        ctx.dispatch("erro", "Erro ao fazer upload de imagem: (" + erro.code + ") " + erro.message);
+                        ctx.dispatch("notificacao", {
+                            tipo: "error",
+                            mensagem: "Erro ao fazer upload de imagem: (" + erro.code + ") " + erro.message
+                        });
                     }, () => {
                         uploadTask.snapshot.ref.getDownloadURL()
                             .then(url => {
@@ -136,10 +162,16 @@ const createStore = () => {
                                     avatar: url
                                 })
                                     .then(() => {
-                                        ctx.dispatch("sucesso", "Perfil editado com sucesso!");
+                                        ctx.dispatch("notificacao", {
+                                            tipo: "success",
+                                            mensagem: "Perfil editado com sucesso!"
+                                        });
                                         ctx.dispatch("redirecionar");
                                     })
-                                    .catch(erro => ctx.dispatch("erro", "Erro ao atualizar perfil: (" + erro.code + ") " + erro.message))
+                                    .catch(erro => ctx.dispatch("notificacao", {
+                                        tipo: "error",
+                                        mensagem: "Erro ao atualizar perfil: (" + erro.code + ") " + erro.message
+                                    }))
                             });
                     });
 
@@ -149,10 +181,16 @@ const createStore = () => {
                         telefone,
                     })
                         .then(() => {
-                            ctx.dispatch("sucesso", "Perfil editado com sucesso!");
+                            ctx.dispatch("notificacao", {
+                                tipo: "success",
+                                mensagem: "Perfil editado com sucesso!"
+                            });
                             ctx.dispatch("redirecionar");
                         })
-                        .catch(erro => ctx.dispatch("erro", "Erro ao atualizar perfil: (" + erro.code + ") " + erro.message))
+                        .catch(erro => ctx.dispatch("notificacao", {
+                            tipo: "error",
+                            mensagem: "Erro ao atualizar perfil: (" + erro.code + ") " + erro.message
+                        }))
                 }
             }
         },
