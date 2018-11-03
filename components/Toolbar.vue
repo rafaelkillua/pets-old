@@ -5,7 +5,7 @@
         <!--class="hidden-md-and-up"-->
 
         <v-toolbar-title dark ripple>
-            <v-btn to="/" depressed flat large class="white--text">
+            <v-btn to="/" depressed flat active-class="default-class" large class="white--text">
                 <!--<nuxt-link to="/" class="white&#45;&#45;text">-->
                 {{ title }}
                 <!--</nuxt-link>-->
@@ -17,9 +17,11 @@
         <v-toolbar-items class="hidden-sm-and-down">
             <v-btn flat
                    v-for="rota in rotas"
-                   :to="rota.caminho"
+                   :to="rota.dispatch || rota.caminho"
                    nuxt
                    :key="rota.nome"
+                   v-if="!rota.drawerOnly"
+                   @click="rota.dispatch ? $store.dispatch(rota.dispatch) : false"
             >
                 <v-icon left>{{rota.icone}}</v-icon>
                 {{rota.nome}}

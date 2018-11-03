@@ -17,15 +17,9 @@
             :bottom="true"
             :multi-line="true"
             :timeout="5000"
+            @click="() => this.$store.dispatch('limparErros')"
         >
             {{sucesso ? sucesso : ""}}
-            <v-btn
-                color="white"
-                flat
-                @click="() => this.$store.dispatch('limparErros')"
-            >
-                X
-            </v-btn>
         </v-snackbar>
 
         <v-snackbar
@@ -34,15 +28,9 @@
             :bottom="true"
             :multi-line="true"
             :timeout="5000"
+            @click="() => this.$store.dispatch('limparErros')"
         >
             {{erro ? erro : ""}}
-            <v-btn
-                color="white"
-                flat
-                @click="() => this.$store.dispatch('limparErros')"
-            >
-                X
-            </v-btn>
         </v-snackbar>
 
         <Footer/>
@@ -67,19 +55,24 @@
             user() {
                 return this.$store.getters.getLoggedUser
             },
+
             erro() {
                 return this.$store.getters.getErro
             },
+
             sucesso() {
                 return this.$store.getters.getSucesso
             },
+
             rotas() {
                 let rotas = [];
+                rotas.push({nome: "Início", icone: "home", caminho: "/", drawerOnly: true});
+
                 if (!!this.user) {
                     rotas.push(
                         {nome: "Protegido", icone: "lock", caminho: "/protegido"},
                         {nome: "Perfil", icone: "person", caminho: "/perfil"},
-                        {nome: "Logout", icone: "exit_to_app", caminho: "/logout"}
+                        {nome: "Logout", icone: "exit_to_app", caminho: "/", dispatch: "logout"}
                     );
                 } else {
                     rotas.push(
@@ -96,12 +89,6 @@
                 this.drawer = value
             }
         },
-
-        watch: {
-            user() {
-                this.$router.push("/");
-            }
-        }
     }
 </script>
 

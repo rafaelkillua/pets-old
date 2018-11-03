@@ -1,4 +1,4 @@
 export default context => {
     if (!context.store.getters.getLoggedUser)
-        context.redirect("/login");
+        context.redirect({name: 'login', query: {redirect: context.from.path}});
 };

@@ -32,8 +32,9 @@
             <v-list-tile
                 v-for="rota in rotas"
                 :key="rota.nome"
-                :to="rota.caminho"
                 nuxt
+                :to="rota.dispatch || rota.caminho"
+                @click="rota.dispatch ? $store.dispatch(rota.dispatch) : false"
             >
                 <v-list-tile-action>
                     <v-icon>{{rota.icone}}</v-icon>

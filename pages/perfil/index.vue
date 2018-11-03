@@ -77,7 +77,7 @@
                 </div>
 
                 <v-card-actions>
-                    <v-btn @click="submit" flat color="primary" :disabled="!valid || submitted">Editar</v-btn>
+                    <v-btn @click="submit" flat color="primary" :disabled="!valid" :loading="submitted">Editar</v-btn>
                     <v-spacer/>
                     <v-btn @click="clear" flat color="secondary" :disabled="submitted">Desfazer Alterações</v-btn>
                 </v-card-actions>
@@ -169,10 +169,9 @@
             onFileChange(e) {
                 const files = e.target.files;
                 if (files[0] !== undefined) {
-                    this.imageName = files[0].name;
-                    if (this.imageName.lastIndexOf('.') <= 0) {
-                        return
-                    }
+                    let imageName = files[0].name;
+                    if (imageName.lastIndexOf('.') <= 0) return;
+
                     const fr = new FileReader();
                     fr.readAsDataURL(files[0]);
                     fr.addEventListener('load', () => {
@@ -180,9 +179,7 @@
                         this.form.arquivo = files[0] // arquivo a se fazer upload
                     })
                 } else {
-                    this.imageName = '';
                     this.form.arquivo = null;
-                    this.form.avatar = ''
                 }
             }
         }
