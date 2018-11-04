@@ -24,7 +24,7 @@
                 v-for="rota in rotas"
                 :key="rota.nome"
                 nuxt
-                :to="rota.dispatch || rota.caminho"
+                :to="rota.dispatch ? false : rota.caminho"
                 @click="rota.dispatch ? $store.dispatch(rota.dispatch) : false"
             >
                 <v-list-tile-action>

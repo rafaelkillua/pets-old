@@ -17,7 +17,7 @@
         <v-toolbar-items class="hidden-sm-and-down">
             <v-btn flat
                    v-for="rota in rotasToolbar"
-                   :to="rota.dispatch ? null : rota.caminho"
+                   :to="rota.dispatch ? false : rota.caminho"
                    nuxt
                    :key="rota.nome"
                    @click="rota.dispatch ? $store.dispatch(rota.dispatch) : false"
