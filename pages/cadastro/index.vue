@@ -69,11 +69,12 @@
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-btn @click="submit" flat color="primary" :disabled="!valid">Cadastrar</v-btn>
+                    <v-btn @click="submit" flat color="primary" :disabled="!valid" :loading="submitted">Cadastrar
+                    </v-btn>
                     <v-spacer/>
-                    <v-btn nuxt to="/login" outline color="error">Faça Login</v-btn>
+                    <v-btn nuxt to="/login" outline color="error" :disabled="submitted">Faça Login</v-btn>
                     <v-spacer/>
-                    <v-btn @click="clear" flat color="secondary">Resetar</v-btn>
+                    <v-btn @click="clear" flat color="secondary" :disabled="submitted">Resetar</v-btn>
                 </v-card-actions>
 
             </v-card>
@@ -122,7 +123,8 @@
                     ]
                 },
                 valid: true,
-                showPassword: false
+                showPassword: false,
+                submitted: false
             }
         },
 
@@ -137,6 +139,8 @@
                 return (this.form.repetirSenha === this.form.senha) ? "" : "As senhas devem ser iguais"
             },
             submit() {
+                this.submitted = true;
+
                 const email = this.form.email;
                 const senha = this.form.senha;
                 const nome = this.form.nome;
@@ -144,10 +148,6 @@
 
                 if (this.$refs.form.validate()) {
                     this.$store.dispatch("signUp", {email, senha, nome, telefone})
-                        .catch(erro => {
-                            alert(erro.code + " - " + erro.message);
-                            // this.$store.dispatch("erro", erro);
-                        })
                 }
             },
             clear() {

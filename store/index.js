@@ -6,29 +6,12 @@ const createStore = () => {
     return new Vuex.Store({
 
         state: () => ({
+            carregando: true,
             user: null,
             progressoUpload: 0,
             notificacoes: [],
             mostrarNotificacao: false
         }),
-
-        getters: {
-            getLoggedUser(state) {
-                return state.user;
-            },
-
-            getNotificacao(state) {
-                return state.notificacoes[0];
-            },
-
-            getMostrarNotificacao(state) {
-                return state.mostrarNotificacao;
-            },
-
-            getProgresso(state) {
-                return state.progressoUpload;
-            },
-        },
 
         mutations: {
             setUser: (state, user) => {
@@ -51,7 +34,33 @@ const createStore = () => {
 
             setProgress: (state, progresso) => {
                 state.progressoUpload = progresso;
+            },
+
+            setCarregando: (state) => {
+                state.carregando = false;
             }
+        },
+
+        getters: {
+            getLoggedUser(state) {
+                return state.user;
+            },
+
+            getNotificacao(state) {
+                return state.notificacoes[0];
+            },
+
+            getMostrarNotificacao(state) {
+                return state.mostrarNotificacao;
+            },
+
+            getProgresso(state) {
+                return state.progressoUpload;
+            },
+
+            getCarregando(state) {
+                return state.carregando;
+            },
         },
 
         actions: {
@@ -70,12 +79,17 @@ const createStore = () => {
                     if (ctx.state.notificacoes.length) ctx.commit("mostrarNotificacao")
                 }, 500);
             },
+            carregando(ctx) {
+                ctx.commit('setCarregando');
+            },
 
             afterLogin(ctx, {uid, email}) {
+                const tempo1 = Date.now();
                 let usuario = {
                     uid,
                     email
                 };
+
                 db.ref('perfil/' + uid).on('value', snapshot => {
                     usuario = {
                         ...usuario,
@@ -83,56 +97,58 @@ const createStore = () => {
                         avatar: snapshot.val().avatar,
                         telefone: snapshot.val().telefone
                     };
+
                     ctx.commit("setUser", usuario);
                     ctx.dispatch("notificacao", {
                         tipo: "success",
                         mensagem: usuario.nome + " logado com sucesso!"
                     });
                     ctx.dispatch("redirecionar");
+                    ctx.commit("setCarregando");
+                    const tempo2 = Date.now();
+                    console.log("Tempo de afterLogin: " + (tempo2 - tempo1))
                 })
             },
 
             signUp(ctx, {email, senha, nome, telefone}) {
-                return new Promise((resolve, reject) => {
-                    auth.createUserWithEmailAndPassword(email, senha)
-                        .then(() => {
-                            db.ref("perfil/" + auth.currentUser.uid).set({
-                                nome,
-                                telefone,
-                                avatar
-                            })
-                                .catch(erro => ctx.dispatch("notificacao", {
-                                    tipo: "error",
-                                    mensagem: "Erro ao salvar dados de cadastro: (" + erro.code + ") " + erro.message
-                                }))
+                auth.createUserWithEmailAndPassword(email, senha)
+                    .then(() => {
+                        db.ref("perfil/" + auth.currentUser.uid).set({
+                            nome,
+                            telefone,
+                            avatar
                         })
-                        .catch(erro => {
-                            ctx.dispatch("notificacao", {
+                            .catch(erro => ctx.dispatch("notificacao", {
                                 tipo: "error",
-                                mensagem: "Erro ao criar usuário: (" + erro.code + ") " + erro.message
-                            });
-                            reject(erro)
-                        })
-                })
+                                mensagem: "Erro ao salvar dados de cadastro: (" + erro.code + ") " + erro.message
+                            }))
+                    })
+                    .catch(erro => {
+                        ctx.dispatch("notificacao", {
+                            tipo: "error",
+                            mensagem: "Erro ao criar usuário: (" + erro.code + ") " + erro.message
+                        });
+                    })
             },
 
             login(ctx, {email, senha}) {
-                return new Promise((resolve, reject) => {
-                    auth.signInWithEmailAndPassword(email, senha)
-                        .catch(erro => {
-                            ctx.dispatch("notificacao", {
-                                tipo: "error",
-                                mensagem: "Erro ao logar: (" + erro.code + ") " + erro.message
-                            });
-                            reject(erro);
-                        })
-                })
+                auth.signInWithEmailAndPassword(email, senha)
+                    .catch(erro => {
+                        ctx.dispatch("notificacao", {
+                            tipo: "error",
+                            mensagem: "Erro ao logar: (" + erro.code + ") " + erro.message
+                        });
+                    })
             },
 
             logout(ctx) {
                 auth.signOut()
                     .then(() => {
                         ctx.commit("setUser", null);
+                        ctx.dispatch("notificacao", {
+                            tipo: "success",
+                            mensagem: "Deslogado com sucesso!"
+                        });
                         ctx.dispatch("redirecionar");
                     })
                     .catch((erro) => ctx.dispatch("notificacao", {

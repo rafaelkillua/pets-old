@@ -1,4 +1,4 @@
-const pkg = require('./package')
+const pkg = require('./package');
 
 module.exports = {
     // mode: 'spa',
@@ -7,7 +7,7 @@ module.exports = {
     ** Headers of the page
     */
     head: {
-        title: "Pets",
+        title: "Pets Cariri",
         meta: [
             {charset: 'utf-8'},
             {name: 'viewport', content: 'width=device-width, initial-scale=1'},
@@ -21,24 +21,31 @@ module.exports = {
     /*
     ** Customize the progress-bar color
     */
-    loading: {color: '#5d5dff'},
+    loading: {
+        color: '#5d5dff'
+    },
 
     /*
     ** Global CSS
     */
-    css: ["~assets/app.styl"],
+    css: [
+        "~assets/app.styl"
+    ],
 
     /*
     ** Plugins to load before mounting the App
     */
-    plugins: ["~plugins/vuetify.js", "~plugins/fireauth.js"],
+    plugins: [
+        "~plugins/vuetify.js",
+        "~plugins/fireauth.js"
+    ],
 
     /*
     ** Nuxt.js modules
     */
     modules: [
         // Doc: https://github.com/nuxt-community/axios-module#usage
-        '@nuxtjs/axios',
+        // '@nuxtjs/axios',
         '@nuxtjs/vuetify'
     ],
     /*

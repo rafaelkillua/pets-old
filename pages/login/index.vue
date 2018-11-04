@@ -37,11 +37,11 @@
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-btn @click="submit" flat color="primary" :disabled="!valid">Login</v-btn>
+                    <v-btn @click="submit" flat color="primary" :disabled="!valid" :loading="submitted">Login</v-btn>
                     <v-spacer/>
-                    <v-btn nuxt to="/cadastro" outline color="error">Cadastre-se</v-btn>
+                    <v-btn nuxt to="/cadastro" outline color="error" :disabled="submitted">Cadastre-se</v-btn>
                     <v-spacer/>
-                    <v-btn @click="clear" flat color="secondary">Resetar</v-btn>
+                    <v-btn @click="clear" flat color="secondary" :disabled="submitted">Resetar</v-btn>
                 </v-card-actions>
 
             </v-card>
@@ -73,18 +73,16 @@
                     ]
                 },
                 showPassword: false,
-                valid: true
+                valid: true,
+                submitted: false
             }
         },
 
         methods: {
             submit() {
+                this.submitted = true;
                 if (this.$refs.form.validate()) {
                     this.$store.dispatch("login", {email: this.form.email, senha: this.form.senha})
-                        .catch((erro) => {
-                            alert(erro.code + " - " + erro.message)
-                            //dispatch erro
-                        });
                 }
             },
             clear() {

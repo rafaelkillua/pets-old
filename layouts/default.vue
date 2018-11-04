@@ -1,6 +1,22 @@
 <template>
-    <v-app>
 
+    <v-content v-if="carregando">
+        <v-container fluid fill-height text-xs-center grid-list-md>
+            <v-layout align-center justify-center wrap>
+                <v-flex xs12>
+                    <v-progress-circular
+                        indeterminate
+                        color="#5d5dff"
+                    ></v-progress-circular>
+                </v-flex>
+                <v-flex xs12>
+                    <h3>Aguenta um pouco que vai...</h3>
+                </v-flex>
+            </v-layout>
+        </v-container>
+    </v-content>
+
+    <v-app v-else>
         <TheDrawer :user="user" :rotas="rotas" :drawer="drawer" @toggleDrawer="drawer = $event"/>
 
         <TheToolbar :toggleDrawer="toggleDrawer" :title="title" :rotas="rotas"/>
@@ -23,7 +39,6 @@
         </v-snackbar>
 
         <TheFooter/>
-
     </v-app>
 </template>
 
@@ -53,6 +68,10 @@
 
             mostrarNotificacao() {
                 return this.$store.getters.getMostrarNotificacao;
+            },
+
+            carregando() {
+                return this.$store.getters.getCarregando;
             },
 
             rotas() {

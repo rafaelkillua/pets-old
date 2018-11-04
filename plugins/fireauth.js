@@ -6,9 +6,10 @@ export default context => {
     auth.useDeviceLanguage();
     auth.onAuthStateChanged(user => {
         if (user) {
-            return store.dispatch('afterLogin', user);
+            store.dispatch('afterLogin', user);
         } else {
-            return store.dispatch('logout');
+            if (process.browser)
+                store.dispatch('carregando');
         }
-    })
+    });
 }
