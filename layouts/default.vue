@@ -90,6 +90,8 @@
                         {nome: "Login", icone: "person", caminho: "/login"}
                     );
                 }
+
+                rotas.push({nome: "Sobre", icone: "info", caminho: "/sobre"});
                 return rotas;
             }
         },
