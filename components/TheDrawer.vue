@@ -11,7 +11,7 @@
                     <img :src="user ? user.avatar : '/avatar.jpg'">
                 </v-list-tile-avatar>
                 <v-list-tile-content>
-                    <v-list-tile-title>{{user ? user.email : 'Cadastre-se ou faça login!'}}</v-list-tile-title>
+                    <v-list-tile-title>{{user ? user.nome : 'Cadastre-se ou faça login!'}}</v-list-tile-title>
                 </v-list-tile-content>
             </v-list-tile>
         </v-list>
@@ -24,8 +24,9 @@
                 v-for="rota in rotas"
                 :key="rota.nome"
                 nuxt
-                :to="rota.dispatch ? false : rota.caminho"
+                :to="rota.dispatch ? null : rota.caminho"
                 @click="rota.dispatch ? $store.dispatch(rota.dispatch) : false"
+                class="black--text"
             >
                 <v-list-tile-action>
                     <v-icon>{{rota.icone}}</v-icon>

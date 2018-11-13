@@ -90,15 +90,21 @@ const createStore = () => {
                     email
                 };
 
-                db.ref('perfil/' + uid).on('value', snapshot => {
-                    usuario = {
-                        ...usuario,
-                        nome: snapshot.val().nome,
-                        avatar: snapshot.val().avatar,
-                        telefone: snapshot.val().telefone
-                    };
+                const promise = () => new Promise(resolve => {
+                    db.ref('perfil/' + uid).on('value', snapshot => {
+                        usuario = {
+                            ...usuario,
+                            nome: snapshot.val().nome,
+                            avatar: snapshot.val().avatar,
+                            telefone: snapshot.val().telefone
+                        };
 
-                    ctx.commit("setUser", usuario);
+                        ctx.commit("setUser", usuario);
+                        resolve();
+                    });
+                });
+
+                promise().then(() => {
                     ctx.dispatch("notificacao", {
                         tipo: "success",
                         mensagem: usuario.nome + " logado com sucesso!"
@@ -107,38 +113,22 @@ const createStore = () => {
                     ctx.commit("setCarregando");
                     const tempo2 = Date.now();
                     console.log("Tempo de afterLogin: " + (tempo2 - tempo1))
-                })
+                });
             },
 
             signUp(ctx, {email, senha, nome, telefone}) {
-                auth.createUserWithEmailAndPassword(email, senha)
+                return auth.createUserWithEmailAndPassword(email, senha)
                     .then(() => {
                         db.ref("perfil/" + auth.currentUser.uid).set({
                             nome,
                             telefone,
                             avatar
                         })
-                            .catch(erro => ctx.dispatch("notificacao", {
-                                tipo: "error",
-                                mensagem: "Erro ao salvar dados de cadastro: (" + erro.code + ") " + erro.message
-                            }))
-                    })
-                    .catch(erro => {
-                        ctx.dispatch("notificacao", {
-                            tipo: "error",
-                            mensagem: "Erro ao criar usuário: (" + erro.code + ") " + erro.message
-                        });
                     })
             },
 
             login(ctx, {email, senha}) {
-                auth.signInWithEmailAndPassword(email, senha)
-                    .catch(erro => {
-                        ctx.dispatch("notificacao", {
-                            tipo: "error",
-                            mensagem: "Erro ao logar: (" + erro.code + ") " + erro.message
-                        });
-                    })
+                return auth.signInWithEmailAndPassword(email, senha);
             },
 
             logout(ctx) {
@@ -157,57 +147,45 @@ const createStore = () => {
                     }));
             },
 
-            editProfile(ctx, {nome, telefone, avatar}) {
+            async editProfile(ctx, {nome, telefone, avatar}) {
+                let avatarURL = null;
 
                 if (avatar) {
-                    const uploadTask = storage.ref("avatar/" + auth.currentUser.uid).put(avatar);
-                    uploadTask.on('state_changed', snapshot => {
-                        let progresso = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        ctx.commit("setProgress", progresso);
-                    }, erro => {
-                        ctx.dispatch("notificacao", {
-                            tipo: "error",
-                            mensagem: "Erro ao fazer upload de imagem: (" + erro.code + ") " + erro.message
-                        });
-                    }, () => {
-                        uploadTask.snapshot.ref.getDownloadURL()
-                            .then(url => {
-                                db.ref("perfil/" + auth.currentUser.uid).update({
-                                    nome,
-                                    telefone,
-                                    avatar: url
-                                })
-                                    .then(() => {
-                                        ctx.dispatch("notificacao", {
-                                            tipo: "success",
-                                            mensagem: "Perfil editado com sucesso!"
-                                        });
-                                        ctx.dispatch("redirecionar");
-                                    })
-                                    .catch(erro => ctx.dispatch("notificacao", {
-                                        tipo: "error",
-                                        mensagem: "Erro ao atualizar perfil: (" + erro.code + ") " + erro.message
-                                    }))
-                            });
-                    });
-
-                } else {
-                    db.ref("perfil/" + auth.currentUser.uid).update({
-                        nome,
-                        telefone,
-                    })
-                        .then(() => {
-                            ctx.dispatch("notificacao", {
-                                tipo: "success",
-                                mensagem: "Perfil editado com sucesso!"
-                            });
-                            ctx.dispatch("redirecionar");
-                        })
+                    await ctx.dispatch("uploadAvatar", avatar)
+                        .then(url => avatarURL = url)
                         .catch(erro => ctx.dispatch("notificacao", {
                             tipo: "error",
-                            mensagem: "Erro ao atualizar perfil: (" + erro.code + ") " + erro.message
-                        }))
+                            mensagem: "Erro ao fazer upload de avatar: (" + erro.code + ") " + erro.message
+                        }));
                 }
+
+                const novoPerfil = {nome, telefone};
+                if (avatarURL) novoPerfil.avatar = avatarURL;
+
+                return db.ref("perfil/" + auth.currentUser.uid).update(novoPerfil)
+                    .then(() => {
+                        ctx.dispatch("notificacao", {
+                            tipo: "success",
+                            mensagem: "Perfil editado com sucesso!"
+                        });
+                        ctx.dispatch("redirecionar");
+                    })
+            },
+
+            uploadAvatar(ctx, avatar) {
+                return new Promise(((resolve, reject) => {
+                    const uploadTask = storage.ref("avatar/" + auth.currentUser.uid).put(avatar);
+                    uploadTask.on('state_changed', snapshot => {
+                            let progresso = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            ctx.commit("setProgress", progresso);
+                        }, erro => reject(erro)
+                        , () => {
+                            uploadTask.snapshot.ref.getDownloadURL()
+                                .then(url => {
+                                    resolve(url);
+                                });
+                        });
+                }));
             }
         },
     })

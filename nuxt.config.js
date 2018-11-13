@@ -55,8 +55,6 @@ module.exports = {
         // See https://github.com/nuxt-community/axios-module#options
     },
 
-    vuetify: {},
-
     /*
     ** Build configuration
     */
@@ -64,6 +62,7 @@ module.exports = {
         /*
         ** You can extend webpack config here
         */
+        extractCSS: true,
         extend(config, ctx) {
 
         }

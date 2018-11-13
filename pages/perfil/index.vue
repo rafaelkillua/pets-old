@@ -144,7 +144,14 @@
                 if (this.$refs.form.validate()) {
                     this.$store.dispatch("editProfile", {nome, telefone, avatar})
                         .catch(erro => {
+                            this.submitted = false;
+                            this.$store.dispatch("notificacao", {
+                                tipo: "error",
+                                mensagem: "Erro ao atualizar perfil: (" + erro.code + ") " + erro.message
+                            })
                         })
+                } else {
+                    this.submitted = false;
                 }
             },
 

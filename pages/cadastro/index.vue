@@ -148,6 +148,15 @@
 
                 if (this.$refs.form.validate()) {
                     this.$store.dispatch("signUp", {email, senha, nome, telefone})
+                        .catch(erro => {
+                            this.submitted = false;
+                            this.$store.dispatch("notificacao", {
+                                tipo: "error",
+                                mensagem: "Erro ao criar usuário: (" + erro.code + ") " + erro.message
+                            });
+                        })
+                } else {
+                    this.submitted = false;
                 }
             },
             clear() {

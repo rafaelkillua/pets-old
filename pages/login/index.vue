@@ -83,6 +83,15 @@
                 this.submitted = true;
                 if (this.$refs.form.validate()) {
                     this.$store.dispatch("login", {email: this.form.email, senha: this.form.senha})
+                        .catch(erro => {
+                            this.submitted = false;
+                            this.$store.dispatch("notificacao", {
+                                tipo: "error",
+                                mensagem: "Erro ao logar: (" + erro.code + ") " + erro.message
+                            });
+                        })
+                } else {
+                    this.submitted = false;
                 }
             },
             clear() {
