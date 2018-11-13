@@ -6,7 +6,7 @@
                 <v-flex xs12>
                     <v-progress-circular
                         indeterminate
-                        color="#5d5dff"
+                        color="#673AB7"
                     ></v-progress-circular>
                 </v-flex>
                 <v-flex xs12>
@@ -32,10 +32,10 @@
             :color="notificacao ? notificacao.tipo : 'info'"
             :bottom="true"
             :multi-line="true"
-            :timeout="5000"
+            :timeout="3000"
             @click="snackbarShow = false"
         >
-            {{notificacao ? notificacao.mensagem : "ERROUUUU"}}
+            {{notificacao ? notificacao.mensagem : "????"}}
         </v-snackbar>
 
         <TheFooter/>

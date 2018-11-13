@@ -1,14 +1,11 @@
 <template>
-    <v-toolbar app dark color="primary">
+    <v-toolbar app color="primary">
 
-        <v-toolbar-side-icon @click="toggleDrawer"></v-toolbar-side-icon>
-        <!--class="hidden-md-and-up"-->
+        <v-toolbar-side-icon class="hidden-md-and-up white--text" @click="toggleDrawer"></v-toolbar-side-icon>
 
-        <v-toolbar-title dark ripple>
-            <v-btn to="/" depressed flat active-class="default-class" large class="white--text">
-                <!--<nuxt-link to="/" class="white&#45;&#45;text">-->
+        <v-toolbar-title ripple>
+            <v-btn to="/" nuxt depressed flat active-class="default-class" large class="white--text">
                 {{ title }}
-                <!--</nuxt-link>-->
             </v-btn>
         </v-toolbar-title>
 

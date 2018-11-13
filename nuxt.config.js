@@ -22,7 +22,7 @@ module.exports = {
     ** Customize the progress-bar color
     */
     loading: {
-        color: '#5d5dff'
+        color: '#673AB7'
     },
 
     /*
@@ -36,7 +36,6 @@ module.exports = {
     ** Plugins to load before mounting the App
     */
     plugins: [
-        "~plugins/vuetify.js",
         "~plugins/fireauth.js"
     ],
 
@@ -44,15 +43,17 @@ module.exports = {
     ** Nuxt.js modules
     */
     modules: [
-        // Doc: https://github.com/nuxt-community/axios-module#usage
-        // '@nuxtjs/axios',
         '@nuxtjs/vuetify'
     ],
-    /*
-    ** Axios module configuration
-    */
-    axios: {
-        // See https://github.com/nuxt-community/axios-module#options
+
+    // https://vuetifyjs.com/en/style/colors
+    vuetify: {
+        theme: {
+            primary: "#D32F2F",
+            info: "#0f5cfa",
+            error: "#D50000",
+            success: "#028d33",
+        }
     },
 
     /*

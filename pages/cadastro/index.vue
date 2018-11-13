@@ -69,12 +69,13 @@
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-btn @click="submit" flat color="primary" :disabled="!valid" :loading="submitted">Cadastrar
+                    <v-btn @click="submit" flat outline color="primary" :disabled="!valid" :loading="submitted">
+                        Cadastrar
                     </v-btn>
                     <v-spacer/>
-                    <v-btn nuxt to="/login" outline color="error" :disabled="submitted">Faça Login</v-btn>
+                    <v-btn to="/login" nuxt flat outline color="info" :disabled="submitted">Faça Login</v-btn>
                     <v-spacer/>
-                    <v-btn @click="clear" flat color="secondary" :disabled="submitted">Resetar</v-btn>
+                    <v-btn @click="clear" flat outline color="secondary" :disabled="submitted">Resetar</v-btn>
                 </v-card-actions>
 
             </v-card>

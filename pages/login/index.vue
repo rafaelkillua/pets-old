@@ -37,11 +37,12 @@
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-btn @click="submit" flat color="primary" :disabled="!valid" :loading="submitted">Login</v-btn>
+                    <v-btn @click="submit" flat outline color="primary" :disabled="!valid" :loading="submitted">Login
+                    </v-btn>
                     <v-spacer/>
-                    <v-btn nuxt to="/cadastro" outline color="error" :disabled="submitted">Cadastre-se</v-btn>
+                    <v-btn to="/cadastro" nuxt flat outline color="info" :disabled="submitted">Cadastre-se</v-btn>
                     <v-spacer/>
-                    <v-btn @click="clear" flat color="secondary" :disabled="submitted">Resetar</v-btn>
+                    <v-btn @click="clear" flat outline color="secondary" :disabled="submitted">Resetar</v-btn>
                 </v-card-actions>
 
             </v-card>
