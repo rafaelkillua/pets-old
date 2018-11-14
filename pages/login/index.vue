@@ -37,12 +37,11 @@
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-btn @click="submit" flat outline color="primary" :disabled="!valid" :loading="submitted">Login
-                    </v-btn>
+                    <v-btn @click="submit" flat outline color="primary" :disabled="!valid" :loading="submitted">Login</v-btn>
                     <v-spacer/>
                     <v-btn to="/cadastro" nuxt flat outline color="info" :disabled="submitted">Cadastre-se</v-btn>
                     <v-spacer/>
-                    <v-btn @click="clear" flat outline color="secondary" :disabled="submitted">Resetar</v-btn>
+                    <EsqueceuSenha/>
                 </v-card-actions>
 
             </v-card>
@@ -53,10 +52,12 @@
 
 <script>
     import needAnonymous from "~/middleware/needAnonymous";
+    import EsqueceuSenha from "~/components/EsqueceuSenha"
 
     export default {
         name: "Login",
         middleware: needAnonymous,
+        components: { EsqueceuSenha },
 
         data() {
             return {
