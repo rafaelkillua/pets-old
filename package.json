@@ -20,6 +20,8 @@
         "nuxt": "^2.2.0"
     },
     "devDependencies": {
+        "eslint-config-prettier": "^3.3.0",
+        "eslint-plugin-vue": "^4.7.1",
         "nodemon": "^1.18.4",
         "stylus": "^0.54.5",
         "stylus-loader": "^3.0.2"
