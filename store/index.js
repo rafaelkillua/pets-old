@@ -215,6 +215,10 @@ const createStore = () => {
                         }
                     );
                 });
+            },
+
+            recuperarEmail(ctx, email) {
+                return auth.sendPasswordResetEmail(email);
             }
         }
     });
