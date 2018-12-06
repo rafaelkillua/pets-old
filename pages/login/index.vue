@@ -50,7 +50,7 @@
                         :disabled="submitted"
                     >Cadastre-se</v-btn>
                     <v-spacer/>
-                    <EsqueceuSenha/>
+                    <recuperar-senha/>
                 </v-card-actions>
             </v-card>
         </v-flex>
@@ -59,12 +59,12 @@
 
 <script>
 import needAnonymous from "~/middleware/needAnonymous";
-import EsqueceuSenha from "~/components/EsqueceuSenha";
+import RecuperarSenha from "~/components/RecuperarSenha";
 
 export default {
     name: "Login",
     middleware: needAnonymous,
-    components: { EsqueceuSenha },
+    components: { RecuperarSenha },
 
     data() {
         return {
